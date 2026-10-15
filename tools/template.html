@@ -1,0 +1,1319 @@
+<title>Raštų skrynia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<style>
+/* Layout: style 2h, a white page with three narrow woven sashes flowing across the top, then a catalogue index rail beside a masonry wall */
+:root{
+  --linen:#ffffff; --paper:#f4f4f3; --ink:#1a1a1a; --muted:#5e5e5b; --text2:#3a3a38; --line:#e4e4e2;
+  --madder:#a8232e; --on-accent:#ffffff; --indigo:#24386b; --birch:#4f6b2e; --ochre:#d4a53c;
+  --sash-ground:#f3eee2; --sash-navy:#1b2a52; --sash-coral:#e0473f; --plum:#7a3b6e; --rose:#c2487e; --amber:#d9822b;
+  --backdrop:rgba(26,26,26,.6); --scrap-shadow:0 3px 14px rgba(26,26,26,.18);
+  --scrim:rgba(28,25,21,.55); --shadow:0 1px 2px rgba(28,25,21,.08),0 12px 32px rgba(28,25,21,.14);
+  --display:"Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --body:"Newsreader", Georgia, "Times New Roman", serif;
+  --mono:"Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--linen);color:var(--ink);font:400 16px/1.55 var(--body);margin:0}
+:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.wrap{max-width:1380px;margin-inline:auto;padding-inline:clamp(16px,3vw,40px)}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.label{font:500 .74rem/1.2 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0}
+
+/* Masthead */
+.band{display:block;width:100%;height:100px;background:var(--band-ground)}
+.mast{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 48px;padding-block:30px 30px;border-bottom:1px solid var(--line)}
+.mast h1{font:800 clamp(2.7rem,7vw,5rem)/.95 var(--display);letter-spacing:-.012em;margin:10px 0 0;text-wrap:balance}
+.lede{max-width:60ch;margin:16px 0 0;font-size:1.12rem;color:var(--muted);text-wrap:pretty}
+.mast-side{display:flex;gap:10px;flex-wrap:wrap}
+
+/* Buttons */
+.btn{font:600 .95rem/1 var(--body);padding:10px 15px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;gap:8px;align-items:center;white-space:nowrap}
+.btn:hover{border-color:var(--ink)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--linen);border-color:var(--ink)}
+.btn.primary{background:var(--madder);border-color:var(--madder);color:var(--on-accent)}
+.btn.danger{color:var(--madder)}
+.btn svg{width:16px;height:16px;flex:none}
+.btn .n{font:500 .78rem var(--mono);font-variant-numeric:tabular-nums;opacity:.8}
+
+/* Index + wall layout */
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:44px;padding-block:28px 56px}
+.index{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;max-height:calc(100vh - 40px);overflow:auto;padding-right:4px}
+.index .label{padding:0 10px 10px}
+.index ul{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+.cat-btn{appearance:none;border:0;background:transparent;color:var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;width:100%;padding:7px 10px;border-radius:6px;cursor:pointer;font:500 1rem/1.25 var(--body);text-align:left}
+.cat-btn:hover{background:var(--paper)}
+.cat-btn[aria-current="true"]{background:var(--paper);color:var(--madder);font-weight:700}
+.cat-btn .n{font:400 .78rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.cat-btn[aria-current="true"] .n{color:var(--madder)}
+.cat-btn.comm{color:var(--birch)}
+.index .sep{height:1px;background:var(--line);margin:6px 10px}
+
+.filters{display:grid;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center}
+.search{flex:1 1 260px;min-width:0;position:relative}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--muted);pointer-events:none}
+.search input{width:100%;font:inherit;font-size:1rem;padding:10px 12px 10px 36px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px}
+.search input::placeholder{color:var(--muted)}
+.group{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0}
+.group > .label{margin-right:4px;min-width:5.5em}
+.sw{width:24px;height:24px;border-radius:50%;border:1px solid var(--line);cursor:pointer;padding:0;flex:none}
+.sw[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
+.picker{position:relative;width:24px;height:24px;border-radius:50%;flex:none;cursor:pointer;background:conic-gradient(var(--madder),var(--amber),var(--ochre),var(--birch),var(--indigo),var(--plum),var(--rose),var(--madder));border:1px solid var(--line)}
+.picker input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:0;padding:0}
+.picker:focus-within{outline:2px solid var(--indigo);outline-offset:2px}
+.hexchip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ink);border-radius:999px;padding:3px 4px 3px 4px;font:500 .8rem var(--mono)}
+.hexchip i{width:18px;height:18px;border-radius:50%;border:1px solid var(--line)}
+.hexchip button{appearance:none;border:0;background:var(--ink);color:var(--linen);width:20px;height:20px;border-radius:50%;cursor:pointer;display:grid;place-items:center;padding:0}
+.hexchip button svg{width:10px;height:10px}
+.pill{appearance:none;font:500 .9rem/1 var(--body);padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;gap:6px;align-items:baseline}
+.pill .n{font:400 .74rem var(--mono);color:var(--muted)}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--linen);border-color:var(--ink)}
+.pill[aria-pressed="true"] .n{color:inherit;opacity:.75}
+.pill:disabled{opacity:.4;cursor:default}
+
+.sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;padding-block:24px 16px}
+.sec-head h2{font:700 clamp(1.7rem,3.2vw,2.3rem)/1.1 var(--display);margin:0;text-wrap:balance}
+.sec-head p{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.count{font:400 .8rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* How-to references */
+.howto{border:1px solid var(--line);border-radius:8px;background:var(--paper);margin:0 0 22px}
+.howto summary{cursor:pointer;padding:12px 16px;font:600 1rem var(--body);display:flex;justify-content:space-between;gap:12px;align-items:baseline;list-style:none}
+.howto summary::-webkit-details-marker{display:none}
+.howto summary::after{content:"+";font:400 1.1rem var(--mono);color:var(--muted)}
+.howto[open] summary::after{content:"−"}
+.howto summary .n{font:400 .78rem var(--mono);color:var(--muted);margin-left:auto}
+.howto ul{list-style:none;margin:0;padding:0 16px 14px;display:grid;gap:10px}
+.howto li{display:grid;gap:2px;min-width:0}
+.howto a{color:var(--ink);font-weight:600;text-decoration-color:var(--line);text-underline-offset:3px;overflow-wrap:anywhere}
+.howto a:hover{text-decoration-color:var(--ink)}
+.howto .meta{font-size:.85rem;color:var(--muted)}
+.howto .tag{font:500 .7rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--birch);margin-right:6px}
+.howto ul ul{padding:6px 0 4px}
+.howto h3{font:700 1rem var(--display);margin:6px 0 0}
+
+.wall{columns:4 220px;column-gap:22px}
+.card{break-inside:avoid;margin:0 0 26px;position:relative}
+.card-btn{appearance:none;border:0;background:transparent;color:inherit;padding:0;display:block;width:100%;cursor:pointer;text-align:left;font:inherit}
+.frame{display:block;position:relative;border-radius:3px;overflow:hidden;max-width:100%;background:color-mix(in srgb, var(--ph, var(--line)) 30%, var(--paper))}
+.frame img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease,transform .4s ease}
+.frame img.on{opacity:1}
+.frame.broken::after{content:"Nuotrauka nerodoma";position:absolute;inset:0;display:grid;place-items:center;font-size:.8rem;color:var(--muted)}
+.card-btn:hover .frame img{transform:scale(1.035)}
+.badge{position:absolute;left:8px;top:8px;background:var(--birch);color:var(--linen);font:600 .7rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 7px;border-radius:4px}
+.weft{display:flex;height:7px;margin-top:7px;overflow:hidden;border-radius:1px}
+.weft i{flex:1}
+.card-title{display:block;margin-top:9px;font:500 1.04rem/1.25 var(--display);overflow-wrap:anywhere}
+.card-sub{display:block;font-size:.84rem;color:var(--muted);margin-top:3px}
+.save-btn{position:absolute;top:8px;right:8px;width:36px;height:36px;border-radius:50%;border:0;background:var(--paper);color:var(--ink);opacity:0;transition:opacity .2s;display:grid;place-items:center;box-shadow:var(--shadow);cursor:pointer}
+.save-btn svg{width:17px;height:17px}
+.card:hover .save-btn,.save-btn:focus-visible,.save-btn[aria-pressed="true"]{opacity:1}
+.save-btn[aria-pressed="true"]{color:var(--madder)}
+.save-btn[aria-pressed="true"] svg path{fill:currentColor}
+@media (hover:none){.save-btn{opacity:1}}
+.morebox{display:flex;justify-content:center;padding-block:8px 24px}
+.empty{padding:40px 0;color:var(--muted);max-width:52ch}
+.empty p{margin:0 0 14px;font-size:1.05rem}
+
+footer{border-top:1px solid var(--line)}
+footer .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px 48px;padding-block:28px 44px;color:var(--muted);font-size:.93rem}
+footer p{margin:6px 0 0;max-width:68ch}
+footer a{color:var(--ink)}
+
+/* Dialogs */
+dialog{border:0;padding:0;background:var(--paper);color:var(--ink);border-radius:10px;width:min(1100px,calc(100vw - 32px));max-height:calc(100dvh - 32px);box-shadow:var(--shadow);overflow:auto}
+dialog::backdrop{background:var(--backdrop)}
+.d-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}
+.d-fig{margin:0;background:var(--linen);display:grid;place-items:center;padding:28px;min-height:360px;position:relative}
+.d-fig img{display:block;max-width:100%;max-height:72vh;width:auto;height:auto}
+.d-body{padding:22px 28px 26px;display:grid;gap:18px;align-content:start;min-width:0}
+.d-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.icon-btn{appearance:none;border:1px solid var(--line);background:transparent;color:var(--ink);width:36px;height:36px;border-radius:50%;display:grid;place-items:center;cursor:pointer;flex:none}
+.icon-btn svg{width:16px;height:16px}
+.d-body h2{font:700 clamp(1.5rem,2.6vw,2rem)/1.12 var(--display);margin:-6px 0 0;text-wrap:balance;overflow-wrap:anywhere}
+.facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 16px;margin:0;font-size:.95rem}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;overflow-wrap:anywhere}
+.facts a{color:var(--ink)}
+.desc{margin:0;max-width:62ch;white-space:pre-line;overflow-wrap:anywhere}
+.desc.more{display:-webkit-box;-webkit-line-clamp:7;-webkit-box-orient:vertical;overflow:hidden}
+.link-btn{appearance:none;border:0;background:none;color:var(--madder);padding:0;font:600 .9rem var(--body);cursor:pointer;justify-self:start}
+.d-sec{display:grid;gap:10px}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.swg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.swatch,.swfind{appearance:none;display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;color:var(--ink);padding:4px 10px 4px 4px;font:400 .8rem var(--mono);cursor:pointer}
+.swfind{padding:4px 9px;border-left:1px solid var(--line)}
+.swfind svg{width:14px;height:14px}
+.swatch i{width:22px;height:22px;border-radius:50%;border:1px solid var(--line)}
+.d-band{display:block;width:100%;border-radius:2px}
+.hint{font-size:.85rem;color:var(--muted);margin:0}
+.d-actions{display:flex;flex-wrap:wrap;gap:10px}
+.d-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--line);padding:10px 14px;position:sticky;bottom:0;background:var(--paper)}
+.d-nav .count{text-align:center}
+
+/* Upload form */
+#up{width:min(640px,calc(100vw - 32px))}
+.up-body{padding:22px 24px 24px;display:grid;gap:16px}
+.up-body h2{font:700 1.6rem/1.1 var(--display);margin:0}
+.field{display:grid;gap:6px;min-width:0}
+.field > span{font-weight:600;font-size:.95rem}
+.field small{color:var(--muted);font-size:.83rem}
+.field input[type=text],.field input[type=url],.field select,.field textarea{font:inherit;font-size:1rem;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--linen);color:var(--ink);width:100%}
+.field textarea{min-height:90px;resize:vertical}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}
+.drop{border:1.5px dashed var(--line);border-radius:10px;padding:16px;display:grid;gap:10px;justify-items:start;background:var(--linen)}
+.drop img{max-height:200px;max-width:100%;border-radius:4px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.93rem}
+.check input{margin-top:4px}
+.status{min-height:1.4em;font-size:.93rem;margin:0}
+.status.err{color:var(--madder)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--linen);padding:9px 15px;border-radius:8px;font-size:.92rem;opacity:0;transition:opacity .2s;pointer-events:none;z-index:10}
+.toast.show{opacity:1}
+
+@media (max-width:860px){
+  .layout{grid-template-columns:minmax(0,1fr);gap:14px;padding-top:18px}
+  .index{position:static;max-height:none;overflow:visible;padding:0}
+  .index .label,.index .sep{display:none}
+  .index ul{display:flex;overflow-x:auto;gap:6px;padding-bottom:8px;scrollbar-width:thin}
+  .index li{flex:0 0 auto}
+  .cat-btn{border:1px solid var(--line);border-radius:999px;padding:7px 12px;white-space:nowrap}
+  .cat-btn[aria-current="true"]{border-color:var(--madder)}
+  .group > .label{min-width:0}
+}
+@media (max-width:760px){
+  .d-grid{grid-template-columns:minmax(0,1fr)}
+  .d-fig{min-height:0;padding:16px}
+  .d-fig img{max-height:46vh}
+  .d-body{padding:18px 18px 22px}
+  .wall{column-gap:14px}
+}
+@media (max-width:420px){ .wall{columns:2 140px} .card-title{font-size:.95rem} }
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+
+/* 2h treatment: flat and square, Helvetica, tight bold headings, red uppercase eyebrows */
+body{-webkit-font-smoothing:antialiased}
+.label{font:700 .72rem/1.2 var(--body);letter-spacing:.16em}
+.btn,.pill,.cat-btn,.search input,.howto,.hexchip,dialog,.field input[type=text],.field input[type=url],.field select,.field textarea,.drop,.frame,.toast,.badge,.swg,.icon-btn,.save-btn{border-radius:0}
+.btn{font:700 .9rem/1 var(--body);padding:12px 18px;border:1.5px solid var(--ink);background:transparent;letter-spacing:.01em}
+.btn:hover{background:var(--ink);color:var(--linen);border-color:var(--ink)}
+.btn.primary{background:var(--madder);border-color:var(--madder);color:var(--on-accent)}
+.btn.primary:hover{background:var(--ink);border-color:var(--ink);color:var(--linen)}
+.btn.danger{border-color:var(--madder);color:var(--madder)}
+.btn.danger:hover{background:var(--madder);color:var(--on-accent)}
+.pill{border-color:var(--ink);font:500 .88rem/1 var(--body)}
+.pill:disabled{border-color:var(--line)}
+.herolinks{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.herolinks a{color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--ink);padding-bottom:2px}
+.herolinks a:hover{color:var(--madder);border-color:var(--madder)}
+.topnav{display:flex;justify-content:space-between;align-items:center;gap:12px 24px;flex-wrap:wrap;padding-block:24px 4px;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+.topnav .brand{font-weight:700}
+.topnav nav{display:flex;gap:18px;flex-wrap:wrap}
+.topnav a{color:var(--ink);text-decoration:none}
+.topnav a:hover{color:var(--madder)}
+.stage{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:100%}
+.hero{position:relative;overflow:hidden;border-bottom:1.5px solid var(--ink)}
+.hero-in{position:relative;z-index:1;display:grid;gap:18px;align-content:space-between;min-height:clamp(480px,52vw,680px);padding-block:clamp(40px,6vw,80px) 36px}
+.hero .lede,.herolinks{justify-self:start;background:var(--linen);box-shadow:0 0 0 10px var(--linen)}
+.hero .btn{background:var(--linen)}
+.hero .btn.primary{background:var(--madder)}
+.hero .btn:hover{background:var(--ink)}
+.eyebrow{font:700 .75rem/1.2 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--madder);margin:0}
+.hero h1{font:800 clamp(3.4rem,11vw,8.6rem)/.9 var(--display);letter-spacing:-.045em;margin:0;color:var(--ink)}
+.hero .lede{font-size:clamp(1.1rem,1.6vw,1.3rem);line-height:1.45;color:var(--ink);max-width:40ch;margin:0;text-wrap:pretty}
+.hero-top{display:grid;gap:18px}
+.hero-bottom{display:grid;gap:22px}
+.hero-row{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-end;justify-content:space-between}
+.sec-head h2{font:700 clamp(1.9rem,3.8vw,3rem)/.95 var(--display);letter-spacing:-.045em}
+.sec-head p{color:var(--text2)}
+.card-title{font:700 .98rem/1.25 var(--body);letter-spacing:-.01em}
+.cat-btn{font:500 .98rem/1.25 var(--body)}
+.cat-btn[aria-current="true"]{background:transparent;color:var(--madder);box-shadow:inset 3px 0 0 var(--madder)}
+.cat-btn.comm{color:var(--birch)}
+.index .label{color:var(--madder)}
+.filters{border-bottom:1.5px solid var(--ink)}
+.howto{border:1.5px solid var(--ink);background:transparent}
+.howto summary{font:700 1rem var(--body);letter-spacing:-.01em}
+.howto .tag{color:var(--madder);font:700 .68rem var(--body);letter-spacing:.12em}
+.d-body h2{font:700 clamp(1.6rem,2.8vw,2.3rem)/1 var(--display);letter-spacing:-.04em}
+.d-fig{background:var(--paper)}
+.up-body h2{font:700 1.8rem/1 var(--display);letter-spacing:-.04em}
+.frame{background:color-mix(in srgb, var(--ph, var(--line)) 22%, var(--paper))}
+footer{border-top:1.5px solid var(--ink)}
+.btn,.pill,.cat-btn,.label,.eyebrow,.herolinks,.card-title,.card-sub,.howto summary,.howto .tag,.howto a,.link-btn,.count,.badge,.swatch,.hexchip,.search input,.field > span,.field select,.field input,.check,.status,.toast,.facts dt,.sec-head h2,.d-body h2,.up-body h2,.hero h1,.n{font-family:var(--display)}
+.count,.n,.swatch,.hexchip{font-variant-numeric:tabular-nums}
+.hero .lede{font-family:var(--body);font-size:clamp(1.2rem,1.7vw,1.4rem);line-height:1.4}
+.desc,.sec-head p,footer p,.howto .meta,.facts dd,.hint,.empty p{font-family:var(--body);font-size:1.02rem}
+
+/* Collage view: hectic, clean, edgy */
+.viewswitch{display:inline-flex;border:1.5px solid var(--ink);background:var(--linen)}
+.viewswitch button{appearance:none;border:0;background:transparent;color:var(--ink);font:700 .85rem/1 var(--display);padding:10px 13px;cursor:pointer;white-space:nowrap}
+.viewswitch button[aria-pressed="true"]{background:var(--ink);color:var(--linen)}
+.collage{border-bottom:1.5px solid var(--ink)}
+.cl-top{position:sticky;top:env(safe-area-inset-top,0px);z-index:950;background:var(--linen);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 20px;padding:12px clamp(16px,3vw,40px);border-bottom:1.5px solid var(--ink)}
+.cl-top h2{font:800 1.5rem/1 var(--display);letter-spacing:-.04em;margin:0}
+.cl-top p{margin:0;font:400 1rem/1.3 var(--body);color:var(--muted);flex:1 1 260px;min-width:0}
+.cl-area{position:relative;width:100%;overflow:hidden;background:var(--linen)}
+.scrap{position:absolute;padding:0;margin:0;border:0;background:none;cursor:pointer;transform:rotate(var(--rot));animation:scrapDrift var(--dur) ease-in-out var(--delay) infinite alternate;user-select:none;-webkit-user-select:none;max-width:none;line-height:1}
+@keyframes scrapDrift{from{transform:translate(0,0) rotate(var(--rot))}to{transform:translate(var(--dx),var(--dy)) rotate(calc(var(--rot) + .7deg))}}
+.scrap:hover,.scrap:focus-visible{z-index:2999!important;animation-play-state:paused}
+.scrap.dragging{cursor:grabbing;animation:none}
+.sc-img{display:block;position:relative;width:100%;overflow:hidden;background:color-mix(in srgb,var(--ph) 25%,var(--paper));box-shadow:var(--scrap-shadow)}
+.sc-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s}
+.sc-img img.on{opacity:1}
+.sc-t{display:inline-block;font:700 .95rem/1.15 var(--display);white-space:nowrap;padding:.38em .62em;color:var(--ink);text-align:left}
+.sc-label{background:var(--ink);color:var(--linen)}
+.sc-pill{color:var(--on-accent);text-transform:uppercase;letter-spacing:.1em;font-size:.72rem}
+.sc-quote{white-space:normal;width:min(190px,52vw);background:var(--linen);border:1.5px solid var(--ink);font:400 .92rem/1.28 var(--body);padding:.5em .65em;box-shadow:var(--scrap-shadow)}
+.sc-hex{display:inline-flex;align-items:center;gap:8px;background:var(--linen);border:1.5px solid var(--ink);font-variant-numeric:tabular-nums;font-size:.85rem}
+.sc-hex i{width:16px;height:16px;display:inline-block;border:1px solid var(--line)}
+.sc-mat{background:var(--paper);border:1px dashed var(--ink);text-transform:uppercase;letter-spacing:.1em;font-size:.72rem}
+.sc-big{font:800 clamp(1.7rem,3.6vw,3.2rem)/.95 var(--display);letter-spacing:-.045em;padding:0;background:none}
+.sc-date{border:2px solid var(--madder);color:var(--madder);background:var(--linen);text-transform:uppercase;letter-spacing:.1em;font-size:.78rem}
+.sc-sash{display:block;width:100%;box-shadow:var(--scrap-shadow)}
+.cl-end{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px;padding:24px 16px 120px}
+.cl-end .empty{padding:0;text-align:center}
+.cl-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:960;display:flex;align-items:center;gap:8px;background:var(--linen);border:1.5px solid var(--ink);box-shadow:var(--shadow);padding:8px;max-width:calc(100vw - 24px);overflow-x:auto}
+.cl-bar > *{flex:none}
+.cl-bar .btn{padding:10px 13px;background:var(--linen)}
+.cl-bar input,.cl-bar select{font:500 .88rem/1.2 var(--display);border:1px solid var(--ink);background:var(--linen);color:var(--ink);padding:9px 10px;border-radius:0;min-width:0}
+.cl-bar input{width:170px}
+.cl-bar .count{padding:0 6px}
+#collage:not([hidden]) ~ footer{padding-bottom:90px}
+@media (max-width:700px){ .cl-bar{left:8px;right:8px;transform:none;max-width:none} .cl-bar input{width:130px} .cl-top{position:static} }
+@media (max-width:860px){ .cat-btn{border-radius:0;border-color:var(--ink)} .cat-btn[aria-current="true"]{box-shadow:none;border-color:var(--madder)} }
+</style>
+
+<header class="hero">
+<canvas class="stage" id="stage" aria-hidden="true"></canvas>
+<div class="wrap hero-in">
+  <div class="hero-top"><p class="eyebrow">Lietuvių tradiciniai rankdarbiai</p>
+  <h1>Raštų<br>skrynia</h1></div>
+  <div class="hero-bottom"><div class="hero-row">
+    <p class="lede" id="lede"></p>
+    <div class="mast-side">
+    <div class="viewswitch" role="group" aria-label="Vaizdas"><button type="button" data-mode="catalog" aria-pressed="true">Katalogas</button><button type="button" data-mode="collage" aria-pressed="false">Koliažas</button></div>
+    <button class="btn primary" id="uploadBtn" type="button" hidden><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 11V2M4.5 5.5L8 2l3.5 3.5M2 11v3h12v-3"/></svg>Įkelti savo darbą</button>
+    <button class="btn" id="shuffle" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 4h3c3 0 5 8 8 8h3M1 12h3c1.3 0 2.3-1.4 3.2-3M10 5.2C10.6 4.5 11.2 4 12 4h3M13 2l2 2-2 2M13 10l2 2-2 2"/></svg>Sumaišyti</button>
+    <button class="btn" id="savedToggle" type="button" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h8v13L8 11l-4 3.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Išsaugoti <span class="n" id="savedN">0</span></button>
+  </div>
+  </div>
+  <nav class="herolinks" aria-label="Puslapio skiltys"><a href="#rodykle">Rinkiniai</a><a href="#kaip" id="navHow">Kaip pasidaryti</a><a href="#apie">Apie projektą</a></nav></div>
+</div>
+</header>
+
+<div class="wrap layout" id="rodykle">
+  <nav class="index" aria-label="Rankdarbių rūšys">
+    <p class="label">Rodyklė</p>
+    <ul id="cats"></ul>
+  </nav>
+  <main>
+    <div class="filters">
+      <div class="row">
+        <label class="search"><span class="vh">Ieškoti</span>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>
+          <input id="q" type="search" placeholder="Ieškoti: tulpės, rombai, vilna, linas, Rokiškis…" autocomplete="off">
+        </label>
+      </div>
+      <div class="group" role="group" aria-label="Spalva"><span class="label">Spalva</span><span id="fams" class="group"></span>
+        <label class="picker" title="Pasirinkti tikslų atspalvį"><span class="vh">Pasirinkti tikslų atspalvį</span><input type="color" id="hex" value="#a2262e"></label>
+        <span id="hexChip"></span>
+      </div>
+      <div class="group" role="group" aria-label="Regionas"><span class="label">Regionas</span><span id="regs" class="group"></span></div>
+      <div class="group" role="group" aria-label="Technika" id="techRow" hidden><span class="label">Technika</span><span id="techs" class="group"></span></div>
+    </div>
+    <div class="sec-head">
+      <div><h2 id="secTitle"></h2><p id="secNote"></p></div>
+      <span class="count" id="count" aria-live="polite"></span>
+    </div>
+    <div id="howto"></div><span id="kaip"></span>
+    <div class="wall" id="wall"></div>
+    <div class="morebox"><button class="btn" id="more" type="button" hidden></button></div>
+    <div class="empty" id="empty" hidden><p id="emptyText"></p><button class="btn" id="clear" type="button">Išvalyti filtrus</button></div>
+  </main>
+</div>
+
+<section id="collage" class="collage" hidden aria-label="Koliažas">
+  <div class="cl-top"><h2>Raštų skrynia</h2><p id="clSub"></p><div class="viewswitch" role="group" aria-label="Vaizdas"><button type="button" data-mode="catalog" aria-pressed="true">Katalogas</button><button type="button" data-mode="collage" aria-pressed="false">Koliažas</button></div></div>
+  <div class="cl-area" id="clArea"></div>
+  <div class="cl-end"><div class="empty" id="clEmpty" hidden><p>Nieko nerasta su šiais filtrais.</p><button class="btn" id="clClear" type="button">Išvalyti filtrus</button></div><button class="btn" id="clMore" type="button">Daugiau skiaučių</button></div>
+</section>
+<div class="cl-bar" id="clBar" hidden role="toolbar" aria-label="Koliažo valdymas">
+  <div class="viewswitch" role="group" aria-label="Vaizdas"><button type="button" data-mode="catalog" aria-pressed="true">Katalogas</button><button type="button" data-mode="collage" aria-pressed="false">Koliažas</button></div>
+  <button class="btn" id="clShuffle" type="button">Sumaišyti</button>
+  <label class="vh" for="clQ">Ieškoti</label><input id="clQ" type="search" placeholder="Ieškoti…" autocomplete="off">
+  <label class="vh" for="clCat">Rūšis</label><select id="clCat"></select>
+  <label class="vh" for="clFam">Spalva</label><select id="clFam"></select>
+  <label class="vh" for="clReg">Regionas</label><select id="clReg"></select>
+  <span class="count" id="clCount"></span>
+</div>
+<footer id="apie">
+  <div class="wrap">
+    <div>
+      <p class="label">Projektas</p>
+      <p>Projektą kuria <a href="https://www.pilieciumokslas.lt/" target="_blank" rel="noopener">Lietuvos piliečių mokslo asociacija</a> ir <a href="https://participio.lt/" target="_blank" rel="noopener">VšĮ „Participio“</a>.</p>
+    </div>
+    <div>
+      <p class="label">Iš kur šie objektai</p>
+      <p id="about1"></p>
+      <p>Į rinkinį neįtrauktos kino, fotografijų ir negatyvų juostos, apdovanojimų juostelės, dokumentai, nuotraukos, tapyba ir ne Lietuvoje sukurti dirbiniai. Aprašai, kilmės vietos ir datavimas pateikti taip, kaip juos nurodė muziejai. Regionas parodytas tik tada, kai jį aiškiai rodo muziejaus nurodyta kilmės vieta.</p>
+    </div>
+    <div>
+      <p class="label">Naudojimas</p>
+      <p>Nekomercinis įkvėpimo puslapis. Paveikslėliai yra sumažintos peržiūros kopijos; prie kiekvieno objekto nurodyta licencija ir nuoroda į pilną įrašą. Išsaugoti objektai lieka tik šioje naršyklėje.</p>
+      <p id="aboutComm" hidden>Bendruomenės darbus įkelia žmonės, kuriems suteikta teisė įkelti. Kiekvienas gali ištrinti savo įkeltus darbus.</p>
+      <p>Surinkta 2026-10-15 iš <a href="https://www.europeana.eu/" target="_blank" rel="noopener">Europeana</a> ir <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a>.</p>
+    </div>
+  </div>
+</footer>
+
+<dialog id="dlg" aria-labelledby="dTitle">
+  <div class="d-grid">
+    <figure class="d-fig" id="dFig"><img id="dImg" alt=""></figure>
+    <div class="d-body">
+      <div class="d-top"><p class="label" id="dCat"></p>
+        <button class="icon-btn" id="dClose" type="button" aria-label="Uždaryti"><svg viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
+      <h2 id="dTitle"></h2>
+      <dl class="facts" id="dFacts"></dl>
+      <p class="desc" id="dDesc"></p>
+      <button class="link-btn" id="dMore" type="button" hidden>Rodyti visą aprašą</button>
+      <section class="d-sec" aria-labelledby="swH"><p class="label" id="swH">Spalvos</p><div class="swatches" id="dSw"></div><p class="hint">Spustelėkite spalvą, kad nukopijuotumėte kodą, arba lupą, kad rastumėte objektų panašiomis spalvomis.</p></section>
+      <section class="d-sec" aria-labelledby="bandH"><p class="label" id="bandH">Juosta šiomis spalvomis</p><canvas class="d-band" id="dBand" aria-hidden="true"></canvas><p class="hint">Juostos raštas, nuaustas iš šio objekto spalvų.</p></section>
+      <div class="d-actions" id="dActions">
+        <button class="btn primary" id="dSave" type="button"></button>
+        <a class="btn" id="dSrc" target="_blank" rel="noopener"></a>
+        <a class="btn" id="dEu" target="_blank" rel="noopener">Europeana ↗</a>
+        <a class="btn" id="dAttach" target="_blank" rel="noopener" hidden>Papildoma medžiaga ↗</a>
+        <button class="btn danger" id="dDel" type="button" hidden>Ištrinti</button>
+      </div>
+    </div>
+  </div>
+  <div class="d-nav">
+    <button class="btn" id="dPrev" type="button">← Ankstesnis</button>
+    <span class="count" id="dPos"></span>
+    <button class="btn" id="dNext" type="button">Kitas →</button>
+  </div>
+</dialog>
+
+<dialog id="up" aria-labelledby="upTitle">
+  <form class="up-body" id="upForm" novalidate>
+    <div class="d-top"><h2 id="upTitle">Įkelti savo darbą</h2>
+      <button class="icon-btn" id="upClose" type="button" aria-label="Uždaryti"><svg viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
+    <p class="hint">Pasidalinkite savo austa juosta, margučiu, sodu ar kitu darbu. Jis atsiras skiltyje „Bendruomenės darbai“.</p>
+    <div class="drop">
+      <label class="field" for="upFile"><span>Nuotrauka</span><small>JPG, PNG arba WEBP, iki 20 MB.</small></label>
+      <input id="upFile" type="file" accept="image/jpeg,image/png,image/webp">
+      <img id="upPrev" alt="" hidden>
+    </div>
+    <label class="field" for="upName"><span>Pavadinimas</span><input id="upName" type="text" maxlength="120" placeholder="Pvz. Rinktinė juosta močiutės raštais"></label>
+    <div class="two">
+      <label class="field" for="upCat"><span>Rūšis</span><select id="upCat"></select></label>
+      <label class="field" for="upReg"><span>Regionas <small>(nebūtina)</small></span><select id="upReg"></select></label>
+    </div>
+    <div class="two">
+      <label class="field" for="upPlace"><span>Kur pagaminta <small>(nebūtina)</small></span><input id="upPlace" type="text" maxlength="120" placeholder="Pvz. Rokiškio r."></label>
+      <label class="field" for="upMat"><span>Medžiagos, technika <small>(nebūtina)</small></span><input id="upMat" type="text" maxlength="200" placeholder="Pvz. vilnoniai siūlai, rinktinis audimas"></label>
+    </div>
+    <label class="field" for="upDesc"><span>Apie darbą <small>(nebūtina)</small></span><textarea id="upDesc" maxlength="2000" placeholder="Kaip darėte, kieno raštas, kiek užtruko…"></textarea></label>
+    <label class="field" for="upLink"><span>Nuoroda <small>(nebūtina)</small></span><input id="upLink" type="url" maxlength="300" placeholder="https://… jūsų tinklaraštis ar pamoka"></label>
+    <label class="field" for="upAttach"><span>Papildoma medžiaga <small>(nebūtina)</small></span><small>Raštas, schema ar aprašas: PDF arba paveikslėlis, iki 20 MB.</small><input id="upAttach" type="file" accept="application/pdf,image/jpeg,image/png,image/webp"></label>
+    <label class="check"><input id="upOk" type="checkbox"><span>Tai mano darbas arba turiu teisę jį čia rodyti.</span></label>
+    <p class="status" id="upStatus" role="status"></p>
+    <div class="d-actions"><button class="btn primary" id="upSubmit" type="submit">Įkelti</button><button class="btn" id="upCancel" type="button">Atšaukti</button></div>
+  </form>
+</dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const DATA = /*__DATA__*/;
+const TUT = /*__TUT__*/;
+const CATS = [
+  {k:"juostos", s:"juostos", n:"Juostos", note:"Rinktinės, pintinės, kaišytinės ir kitos austos juostos."},
+  {k:"sodai", s:"sodai", n:"Sodai ir šiaudinukai", note:"Šiaudiniai sodai, sodeliai ir eglutės žaisliukai."},
+  {k:"margučiai", s:"marguciai", n:"Margučiai", note:"Velykų margučiai."},
+  {k:"verbos", s:"verbos", n:"Verbos", note:"Verbos iš džiovintų augalų."},
+  {k:"karpiniai", s:"karpiniai", n:"Karpiniai", note:"Popieriaus karpiniai."},
+  {k:"rūpintojėliai", s:"rupintojeliai", n:"Rūpintojėliai ir šventieji", note:"Liaudies meistrų drožti šventųjų atvaizdai."},
+  {k:"kryžiai", s:"kryziai", n:"Kryžiai ir saulutės", note:"Kalvių kaltos kryžių viršūnės, koplytstulpiai ir jų piešiniai."},
+  {k:"lovatiesės", s:"lovatieses", n:"Lovatiesės ir kilimėliai", note:"Austos, siuvinėtos ir nertos lovatiesės, staltiesės, kilimėliai ir jų projektai."},
+  {k:"rankšluosčiai", s:"ranksluosciai", n:"Rankšluosčiai", note:"Austi rankšluosčiai su raštuotais galais."},
+  {k:"pirštinės", s:"pirstines", n:"Pirštinės ir riešinės", note:"Raštuotos pirštinės, riešinės ir kojinės."},
+  {k:"drabužiai", s:"drabuziai", n:"Drabužiai", note:"Prijuostės, sijonai, skaros, marškiniai, liemenės."},
+  {k:"prieverpstės", s:"prieverpstes", n:"Prieverpstės ir verpstės", note:"Drožti verpimo įrankiai."},
+  {k:"skrynios", s:"skrynios", n:"Kraitinės skrynios", note:"Dažytos skrynios ir jų puošybos piešiniai."},
+  {k:"kaukės", s:"kaukes", n:"Užgavėnių kaukės", note:"Persirengėlių kaukės."}
+];
+const COMM = {k:"community", s:"bendruomene", n:"Bendruomenės darbai", note:"Darbai, kuriuos įkėlė šio puslapio lankytojai."};
+const REGS = ["Aukštaitija","Žemaitija","Dzūkija","Suvalkija","Mažoji Lietuva"];
+const FAMS = [
+  {k:"raudona", n:"Raudona", c:"#B3262E"}, {k:"oranžinė", n:"Oranžinė", c:"#D9822B"}, {k:"geltona", n:"Geltona", c:"#E1B936"},
+  {k:"žalia", n:"Žalia", c:"#4F7A3A"}, {k:"mėlyna", n:"Mėlyna", c:"#2F4F8F"}, {k:"rožinė", n:"Rožinė ir violetinė", c:"#C2487E"},
+  {k:"ruda", n:"Ruda", c:"#74492A"}, {k:"juoda", n:"Juoda", c:"#1E1D1F"}, {k:"balta", n:"Balta", c:"#F4F2EC"}
+];
+const TECHS = ["Rinktinė","Pintinė","Austinė","Kaišytinė","Kontušo"];
+const CAT = Object.fromEntries(CATS.map(c => [c.k, c]));
+CAT.community = COMM;
+const SAVE_KEY = "rastu-skrynia:saved";
+const ICON_SAVE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h8v13L8 11l-4 3.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+const ICON_FIND = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>';
+const ICON_X = '<svg viewBox="0 0 16 16" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>';
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+const norm = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const HEX = /^#[0-9a-f]{6}$/i;
+function plural(n, one, few, many){ const a = n % 10, b = n % 100; if (a === 1 && b !== 11) return one; if (a >= 2 && b < 10 || a >= 2 && b > 20) return few; return many; }
+const objektai = n => n + " " + plural(n, "objektas", "objektai", "objektų");
+const hexRgb = h => [1,3,5].map(i => parseInt(h.slice(i, i + 2), 16));
+function chroma(hex){ const [r, g, b] = hexRgb(hex).map(v => v / 255); return Math.max(r, g, b) - Math.min(r, g, b); }
+function cdist(a, b){ const rm = (a[0] + b[0]) / 2, dr = a[0] - b[0], dg = a[1] - b[1], db = a[2] - b[2]; return Math.sqrt((2 + rm / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rm) / 256) * db * db); }
+
+function prep(d){
+  d.pal = (d.pal || []).filter(h => HEX.test(h));
+  d.fam = (d.fam || []).map(f => f === "violetinė" ? "rožinė" : f);
+  d.palRgb = d.pal.map(hexRgb);
+  d.vivid = Math.max(0, ...d.pal.map(chroma));
+  d.hay = norm([d.title, d.desc, d.creator, d.provider, CAT[d.cat] ? CAT[d.cat].n : "", d.tech, d.place, d.reg, d.date, (d.mat || []).join(" ")].join(" "));
+  return d;
+}
+DATA.forEach(prep);
+let community = [];
+let ALL = DATA.slice();
+const byId = new Map(ALL.map(d => [d.id, d]));
+
+let saved = new Set();
+try { saved = new Set(JSON.parse(localStorage.getItem(SAVE_KEY) || "[]")); } catch (e) {}
+function persist(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify([...saved])); } catch (e) {} }
+
+const state = { mode: "catalog", cat: "all", all: false, q: "", fam: null, hex: null, reg: null, tech: null, saved: false, seed: 7 };
+const PAGE = 48, PICK_J = 6, PICK_O = 6;
+let shown = PAGE;
+const isHome = () => state.cat === "all" && !state.all && !state.saved && !state.q && !state.fam && !state.hex && !state.reg;
+// Front page pick: six juostos and six other crafts, each from a different category
+function featured(){
+  const j = [], o = [], cats = new Set();
+  for (const i of order){ const d = ALL[i]; if (d.via === "community") continue;
+    if (d.cat === "juostos"){ if (j.length < PICK_J) j.push(d); }
+    else if (o.length < PICK_O && !cats.has(d.cat)){ o.push(d); cats.add(d.cat); }
+    if (j.length >= PICK_J && o.length >= PICK_O) break; }
+  const out = []; for (let k = 0; k < Math.max(j.length, o.length); k++){ if (j[k]) out.push(j[k]); if (o[k]) out.push(o[k]); }
+  return out;
+}
+let view = [];
+let current = -1;
+
+function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+// Items that share an image bundle stay close together in every order, so a screenful loads only a few bundles
+let order = [];
+function reshuffle(){
+  const r = rng(state.seed);
+  const units = new Map();
+  ALL.forEach((d, i) => { const key = d.b != null ? "b" + d.b : "i" + i; if (!units.has(key)) units.set(key, []); units.get(key).push(i); });
+  const list = [...units.values()].map(ix => {
+    for (let i = ix.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [ix[i], ix[j]] = [ix[j], ix[i]]; }
+    const d0 = ALL[ix[0]];
+    const v = ix.reduce((s, i) => s + ALL[i].vivid, 0) / ix.length;
+    const w = (0.15 + v) * (d0.cat === "juostos" ? 1.6 : 1) * (d0.via === "community" ? 3 : 1);
+    return { ix, key: Math.pow(r(), 1 / w) };
+  }).sort((a, b) => b.key - a.key);
+  order = [];
+  for (let g = 0; g < list.length; g += 4){
+    const grp = list.slice(g, g + 4).map(u => u.ix.slice());
+    let more = true;
+    while (more){ more = false; for (const u of grp) if (u.length){ order.push(u.shift()); more = true; } }
+  }
+}
+
+/* ---------- Images: single files, bundles, community uploads ---------- */
+const bundles = new Map();
+function loadBundle(n){
+  if (!bundles.has(n)){
+    const p = fetch("b/" + String(n).padStart(3, "0") + ".json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
+    p.catch(() => bundles.delete(n));
+    bundles.set(n, p);
+  }
+  return bundles.get(n);
+}
+async function srcFor(d){
+  if (d.via === "community") return "/_blob/" + d.asset;
+  if (d.b == null) return "img/" + d.id + ".jpg";
+  const data = await loadBundle(d.b);
+  if (!data[d.id]) throw new Error("missing");
+  return data[d.id];
+}
+function fill(img){
+  const d = byId.get(img.dataset.id); if (!d) return;
+  const frame = img.closest(".frame");
+  img.onload = () => img.classList.add("on");
+  img.onerror = () => frame && frame.classList.add("broken");
+  srcFor(d).then(src => { img.src = src; }, () => frame && frame.classList.add("broken"));
+}
+const io = "IntersectionObserver" in window ? new IntersectionObserver(entries => {
+  for (const e of entries) if (e.isIntersecting){ io.unobserve(e.target); fill(e.target); }
+}, { rootMargin: "900px 0px" }) : null;
+
+/* ---------- Woven sashes, style 2h ---------- */
+// Motifs read as weaving drafts: x and o are pattern threads, dots are ground
+const MOT = {
+  diamond: [".....x.....", "....x.x....", "...x...x...", "..x..o..x..", ".x..o.o..x.", "x..o.o.o..x", ".x..o.o..x.", "..x..o..x..", "...x...x...", "....x.x....", ".....x....."],
+  star: ["x....x....x", ".x...x...x.", "..x..x..x..", "...x...x...", ".....o.....", "xxx.ooo.xxx", ".....o.....", "...x...x...", "..x..x..x..", ".x...x...x.", "x....x....x"],
+  ruta: ["....x....", "...xox...", "..x.x.x..", ".x.xox.x.", "xoxo.oxox", ".x.xox.x.", "..x.x.x..", "...xox...", "....x...."],
+  zig: ["x.....", ".x....", "..x...", "...x..", "....x.", ".....x", "....x.", "...x..", "..x...", ".x....", "x....."],
+  cross: ["...x...", "..xox..", "...x...", "xx.o.xx", "...x...", "..xox..", "...x..."]
+};
+function compose(list, gap, line){
+  const h = Math.max(...list.map(m => m.length));
+  const rows = Array(h).fill("");
+  list.forEach(m => {
+    const w = m[0].length, off = (h - m.length) >> 1;
+    for (let r = 0; r < h; r++){
+      rows[r] += m[r - off] || ".".repeat(w);
+      rows[r] += ((line && r === (h >> 1)) ? "x" : ".").repeat(gap);
+    }
+  });
+  return rows;
+}
+function padRows(rows, n){ const e = ".".repeat(rows[0].length); return [...Array(n).fill(e), ...rows, ...Array(n).fill(e)]; }
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const CR = tok("--madder"), CG = tok("--birch"), CB = tok("--indigo"), CY = tok("--ochre"), CGR = tok("--sash-ground"), CN = tok("--sash-navy"), CC = tok("--sash-coral");
+const MA = padRows(compose([MOT.diamond, MOT.star], 3, true), 1);
+const MC = padRows(compose([MOT.star, MOT.zig, MOT.zig], 2, false), 1);
+const MD = padRows(compose([MOT.diamond, MOT.cross, MOT.ruta, MOT.cross], 2, true), 1);
+const PALS = {
+  classic: { bg: CGR, x: CR, o: CR, b: CB, g: CG },
+  navy: { bg: CN, x: CY, o: CC, b: CY, g: CC },
+  green: { bg: CGR, x: CG, o: CR, b: CG, g: CR }
+};
+// One repeat of a sash, drawn twice side by side so a slice never has to wrap
+function weaveTile(motif, pal, cw, ch){
+  const w = motif[0].length, full = k => k.repeat(w);
+  const rows = [full("b"), full("b"), full("."), full("g"), full("."), ...motif, full("."), full("g"), full("."), full("b"), full("b")];
+  const W = w * cw, H = rows.length * ch;
+  const cv = document.createElement("canvas"); cv.width = W * 2; cv.height = H;
+  const x = cv.getContext("2d");
+  for (let rep = 0; rep < 2; rep++){
+    const ox = rep * W;
+    x.fillStyle = pal.bg; x.fillRect(ox, 0, W, H);
+    rows.forEach((r, yy) => { for (let xx = 0; xx < w; xx++){ const k = r[xx]; if (k !== "."){ x.fillStyle = pal[k] || pal.x; x.fillRect(ox + xx * cw, yy * ch, cw, ch); } } });
+    for (let xx = 0; xx < w; xx++){
+      x.fillStyle = "rgba(255,255,255,.17)"; x.fillRect(ox + xx * cw, 0, cw * .38, H);
+      x.fillStyle = "rgba(0,0,0,.2)"; x.fillRect(ox + xx * cw + cw * .8, 0, cw * .2, H);
+    }
+    x.fillStyle = "rgba(0,0,0,.07)";
+    for (let yy = 0; yy < rows.length; yy++) x.fillRect(ox, yy * ch, W, Math.max(1, ch * .15));
+  }
+  const g = x.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, "rgba(255,255,255,.12)"); g.addColorStop(.35, "rgba(255,255,255,0)"); g.addColorStop(.65, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.16)");
+  x.fillStyle = g; x.fillRect(0, 0, W * 2, H);
+  return { cv, W, H };
+}
+function bez(a, b, c, d, t){ const u = 1 - t; return [u*u*u*a[0] + 3*u*u*t*b[0] + 3*u*t*t*c[0] + t*t*t*d[0], u*u*u*a[1] + 3*u*u*t*b[1] + 3*u*t*t*c[1] + t*t*t*d[1]]; }
+// Points spaced evenly along the curve, each with its direction, so the sash texture keeps its proportions
+function sampleCurve(seg, step){
+  const pts = [];
+  for (let i = 0; i <= 400; i++) pts.push(bez(seg[0], seg[1], seg[2], seg[3], i / 400));
+  const out = []; let acc = 0, next = 0;
+  for (let i = 1; i < pts.length; i++){
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], d = Math.hypot(x1 - x0, y1 - y0);
+    while (d > 0 && next <= acc + d){
+      const t = (next - acc) / d, a = Math.atan2(y1 - y0, x1 - x0);
+      out.push({ x: x0 + (x1 - x0) * t, y: y0 + (y1 - y0) * t, c: Math.cos(a), s: Math.sin(a), len: next });
+      next += step;
+    }
+    acc += d;
+  }
+  return { out, pts };
+}
+const lum = ([r, g, b]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const stage = $("stage"), sctx = stage.getContext("2d");
+// The three narrow sashes of variant 2h: same wave, stacked, each flowing at its own speed
+const BASE = [[-120, 560], [200, 400], [400, 760], [780, 520]];
+const RIB_DEF = [{ m: MA, p: "classic", speed: 18 }, { m: MD, p: "navy", speed: 26 }, { m: MC, p: "green", speed: 34 }];
+const STEP = 3;
+let rib = [], shadowCv = null, sDpr = 1, rafId = 0, lastT = 0, stageVisible = true;
+function layoutStage(){
+  const W = Math.max(1, stage.clientWidth), H = Math.max(1, stage.clientHeight);
+  sDpr = Math.min(window.devicePixelRatio || 1, 2);
+  stage.width = Math.round(W * sDpr); stage.height = Math.round(H * sDpr);
+  const cell = W < 640 ? 1.5 : 2;
+  const cw = Math.max(1, Math.round(cell * sDpr)), ch = Math.max(1, Math.round(cell * 1.3 * sDpr));
+  const tiles = RIB_DEF.map(r => weaveTile(r.m, PALS[r.p], cw, ch));
+  const rw = Math.max(...tiles.map(t => t.H)) / sDpr;
+  const gapY = rw + Math.max(6, rw * .15);
+  const sx = W / 640;
+  const raw = BASE.map(([x, y]) => [x * sx, y - 560]);
+  const probe = sampleCurve(raw, 8).pts;
+  const minY = Math.min(...probe.map(p => p[1])), maxY = Math.max(...probe.map(p => p[1]));
+  const margin = 10, room = Math.min(H * .5, H - 2 * margin) - rw - 2 * gapY;
+  const amp = Math.max(.2, Math.min(1.1, room / Math.max(1, maxY - minY)));
+  const blockH = (maxY - minY) * amp + rw + 2 * gapY;
+  // centre the sashes on the title so they read as its background
+  const h1 = document.querySelector(".hero h1"), sr = stage.getBoundingClientRect();
+  const cy = h1 ? h1.getBoundingClientRect().top - sr.top + h1.offsetHeight * .62 : H * .45;
+  const blockTop = Math.min(Math.max(margin, cy - blockH / 2), Math.max(margin, H - blockH - margin));
+  const top = blockTop + rw / 2 - minY * amp;
+  const prev = rib;
+  rib = tiles.map((t, k) => {
+    const seg = raw.map(([x, y]) => [x, top + y * amp + k * gapY]);
+    const smp = sampleCurve(seg, STEP);
+    return { t, hw: t.H / sDpr / 2, speed: RIB_DEF[k].speed, o: prev[k] ? prev[k].o : 0, out: smp.out, pts: smp.pts };
+  });
+  // Soft shadow under the sashes, drawn once per layout (the path sits far off-canvas, only its shadow lands)
+  shadowCv = document.createElement("canvas"); shadowCv.width = stage.width; shadowCv.height = stage.height;
+  const sh = shadowCv.getContext("2d");
+  sh.setTransform(sDpr, 0, 0, sDpr, 0, 0);
+  sh.lineWidth = rw * .9; sh.strokeStyle = "#000";
+  sh.shadowColor = "rgba(28,25,21,.24)"; sh.shadowBlur = 14 * sDpr; sh.shadowOffsetX = 0; sh.shadowOffsetY = (10000 + 12) * sDpr;
+  rib.forEach(r => { sh.beginPath(); r.pts.forEach((p, i) => i ? sh.lineTo(p[0], p[1] - 10000) : sh.moveTo(p[0], p[1] - 10000)); sh.stroke(); });
+  drawStage();
+}
+function drawStage(){
+  const ctx = sctx;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, stage.width, stage.height);
+  if (shadowCv) ctx.drawImage(shadowCv, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+  const sw = STEP + 1.2;
+  for (const r of rib){
+    const Wt = r.t.W;
+    for (const p of r.out){
+      let u = ((p.len - r.o) * sDpr) % Wt; if (u < 0) u += Wt;
+      ctx.setTransform(sDpr * p.c, sDpr * p.s, -sDpr * p.s, sDpr * p.c, sDpr * p.x, sDpr * p.y);
+      ctx.drawImage(r.t.cv, u, 0, sw * sDpr, r.t.H, 0, -r.hw, sw, r.hw * 2);
+    }
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+function tick(t){
+  const dt = Math.min(64, t - lastT); lastT = t;
+  for (const r of rib) r.o += dt * r.speed / 1000;
+  drawStage();
+  rafId = requestAnimationFrame(tick);
+}
+function play(){ if (reduceMotion || rafId || !stageVisible || document.hidden) return; lastT = performance.now(); rafId = requestAnimationFrame(tick); }
+function pause(){ if (rafId) cancelAnimationFrame(rafId); rafId = 0; }
+function startRibbons(){
+  layoutStage();
+  if ("IntersectionObserver" in window) new IntersectionObserver(es => { stageVisible = es[0].isIntersecting; stageVisible ? play() : pause(); }).observe(stage);
+  document.addEventListener("visibilitychange", () => document.hidden ? pause() : play());
+  play();
+}
+// A small sash in an object's own colours, for the detail view
+function weavePalette(pal){
+  const cs = (pal && pal.length ? pal : [CGR, CR]).map(h => ({ h, rgb: hexRgb(h) }));
+  const ground = cs.reduce((a, b) => lum(b.rgb) > lum(a.rgb) ? b : a);
+  const rest = cs.filter(c => c !== ground);
+  if (!rest.length) rest.push({ h: "#1c1915", rgb: [28, 25, 21] });
+  const pattern = rest.reduce((a, b) => dist(b.rgb, ground.rgb) > dist(a.rgb, ground.rgb) ? b : a);
+  const others = rest.filter(c => c !== pattern);
+  return { bg: ground.h, x: pattern.h, o: (others[0] || pattern).h, b: (others[1] || others[0] || pattern).h, g: (others[0] || pattern).h };
+}
+function drawDetailWeave(cv, pal){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(cv.getBoundingClientRect().width));
+  const t = weaveTile(MA, weavePalette(pal), Math.max(1, Math.round(3 * dpr)), Math.max(1, Math.round(3.9 * dpr)));
+  cv.style.height = (t.H / dpr) + "px"; cv.width = Math.round(W * dpr); cv.height = t.H;
+  const ctx = cv.getContext("2d"); ctx.imageSmoothingEnabled = false;
+  for (let x = 0; x < cv.width; x += t.W) ctx.drawImage(t.cv, 0, 0, t.W, t.H, x, 0, t.W, t.H);
+}
+
+/* ---------- Filters and rendering ---------- */
+let hexTarget = null;
+function hexScore(d){ return d.palRgb.length ? Math.min(...d.palRgb.map(c => cdist(c, hexTarget))) : 9999; }
+const HEX_MAX = 95;
+function matches(d, skip){
+  if (skip !== "cat" && state.cat !== "all"){
+    if (state.cat === "community" ? d.via !== "community" : d.cat !== state.cat) return false;
+  }
+  if (state.saved && !saved.has(d.id)) return false;
+  if (skip !== "fam" && state.fam && !d.fam.includes(state.fam)) return false;
+  if (skip !== "hex" && hexTarget && hexScore(d) > HEX_MAX) return false;
+  if (skip !== "reg" && state.reg && d.reg !== state.reg) return false;
+  if (skip !== "tech" && state.tech && d.tech !== state.tech) return false;
+  if (state.q){ for (const w of norm(state.q).split(/\s+/).filter(Boolean)) if (!d.hay.includes(w)) return false; }
+  return true;
+}
+function renderIndex(){
+  const counts = {}; ALL.forEach(d => { counts[d.cat] = (counts[d.cat] || 0) + 1; if (d.via === "community") counts.community = (counts.community || 0) + 1; });
+  const row = (k, n, c, cls) => `<li><button class="cat-btn${cls ? " " + cls : ""}" type="button" data-cat="${k}" aria-current="${state.cat === k}">${esc(n)}<span class="n">${c}</span></button></li>`;
+  const homeBtn = `<li><button class="cat-btn" type="button" data-cat="home" aria-current="${isHome()}">Pradžia<span class="n">${PICK_J + PICK_O}</span></button></li>`;
+  let html = homeBtn + row("all", "Visi rankdarbiai", ALL.length).replace(`aria-current="${state.cat === "all"}"`, `aria-current="${state.cat === "all" && !isHome()}"`);
+  if (commReady) html += row("community", COMM.n, counts.community || 0, "comm");
+  html += '<li class="sep" aria-hidden="true"></li>' + CATS.map(c => row(c.k, c.n, counts[c.k] || 0)).join("");
+  $("cats").innerHTML = html;
+}
+function renderFams(){
+  $("fams").innerHTML = FAMS.map(f => `<button class="sw" type="button" data-fam="${f.k}" style="background:${f.c}" aria-pressed="${state.fam === f.k}" aria-label="${f.n}" title="${f.n}"></button>`).join("");
+  $("hexChip").innerHTML = state.hex ? `<span class="hexchip"><i style="background:${state.hex}"></i>Artimiausi ${state.hex.toUpperCase()}<button type="button" id="hexClear" aria-label="Nuimti atspalvio filtrą">${ICON_X}</button></span>` : "";
+}
+function renderRegs(){
+  const pool = ALL.filter(d => matches(d, "reg"));
+  $("regs").innerHTML = REGS.map(r => { const n = pool.filter(d => d.reg === r).length; return `<button class="pill" type="button" data-reg="${r}" aria-pressed="${state.reg === r}"${n || state.reg === r ? "" : " disabled"}>${r}<span class="n">${n}</span></button>`; }).join("");
+}
+function renderTechs(){
+  const show = state.cat === "juostos";
+  $("techRow").hidden = !show;
+  if (!show) return;
+  const pool = ALL.filter(d => matches(d, "tech"));
+  $("techs").innerHTML = TECHS.map(t => { const n = pool.filter(d => d.tech === t).length; return `<button class="pill" type="button" data-tech="${t}" aria-pressed="${state.tech === t}">${t}<span class="n">${n}</span></button>`; }).join("");
+}
+function tutList(k){ return (TUT && Array.isArray(TUT[k])) ? TUT[k] : []; }
+function tutItem(t){
+  return `<li><a href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.title)}</a><span class="meta"><span class="tag">${esc(t.type || "")}</span>${esc(t.source || "")}${t.lang === "en" ? " · anglų k." : ""}${t.note ? " · " + esc(t.note) : ""}</span></li>`;
+}
+function renderHowto(){
+  const box = $("howto");
+  if (state.saved || state.cat === "community"){ box.innerHTML = ""; return; }
+  if (state.cat === "all"){
+    const groups = CATS.filter(c => tutList(c.k).length);
+    const n = groups.reduce((s, c) => s + tutList(c.k).length, 0);
+    box.innerHTML = n ? `<details class="howto"><summary>Kaip pasidaryti: pamokos ir šaltiniai<span class="n">${n}</span></summary><ul>${groups.map(c => `<li><h3>${esc(c.n)}</h3><ul>${tutList(c.k).map(tutItem).join("")}</ul></li>`).join("")}</ul></details>` : "";
+    return;
+  }
+  const list = tutList(state.cat);
+  box.innerHTML = list.length ? `<details class="howto" open><summary>Kaip pasidaryti<span class="n">${list.length}</span></summary><ul>${list.map(tutItem).join("")}</ul></details>` : "";
+}
+function card(d, i){
+  const c = CAT[d.cat] || COMM;
+  const weft = d.pal.map(h => `<i style="background:${h}"></i>`).join("");
+  const isSaved = saved.has(d.id);
+  const sub = d.via === "community" ? "Bendruomenė · " + c.n : (d.tech ? d.tech + " juosta" : c.n) + (d.reg ? " · " + d.reg : "");
+  const w = Math.max(1, +d.w || 1), h = Math.max(1, +d.h || 1);
+  return `<article class="card"><button class="card-btn" type="button" data-i="${i}">` +
+    `<span class="frame" style="aspect-ratio:${w}/${h};--ph:${d.pal[0] || "#cccccc"}"><img data-id="${esc(d.id)}" alt="" decoding="async"></span>` +
+    (d.via === "community" ? '<span class="badge">Bendruomenė</span>' : "") +
+    `<span class="weft" aria-hidden="true">${weft}</span>` +
+    `<span class="card-title">${esc(d.title)}</span>` +
+    `<span class="card-sub">${esc(sub)}</span></button>` +
+    `<button class="save-btn" type="button" data-save="${esc(d.id)}" aria-pressed="${isSaved}" aria-label="${isSaved ? "Pašalinti iš išsaugotų" : "Išsaugoti"}: ${esc(d.title)}">${ICON_SAVE}</button></article>`;
+}
+function observeImgs(root){ root.querySelectorAll("img[data-id]:not([src])").forEach(img => io ? io.observe(img) : fill(img)); }
+function renderMore(){
+  const btn = $("more"), home = isHome();
+  if (home){ btn.hidden = false; btn.textContent = "Rodyti visus " + ALL.length + " rankdarbius"; return; }
+  const left = view.length - shown;
+  btn.hidden = left <= 0;
+  if (left > 0) btn.textContent = "Rodyti daugiau (" + Math.min(PAGE, left) + ")";
+}
+function render(){
+  if (state.mode === "collage"){ renderCollage(); return; }
+  const home = isHome();
+  view = home ? featured() : order.map(i => ALL[i]).filter(d => matches(d));
+  if (hexTarget) view.sort((a, b) => hexScore(a) - hexScore(b));
+  const c = CAT[state.cat];
+  $("secTitle").textContent = home ? "Šiandien iš skrynios" : state.saved ? "Išsaugoti" : (c ? c.n : "Visi rankdarbiai");
+  $("secNote").textContent = home ? "Dvylika atsitiktinai atrinktų darbų. Spauskite „Sumaišyti“, kad pamatytumėte kitus, arba rinkitės rūšį rodyklėje." : state.saved ? "Objektai, kuriuos pažymėjote šioje naršyklėje." : (c ? c.note : "Juostos, margučiai, šiaudinukai, karpiniai, kryžiai, kaukės ir kiti raštai.");
+  $("count").textContent = home ? view.length + " iš " + ALL.length : (hexTarget ? "Pagal atspalvį: " : "") + (view.length > shown ? "Rodoma " + shown + " iš " + view.length : objektai(view.length));
+  const wall = $("wall");
+  if (io) io.disconnect();
+  wall.innerHTML = view.slice(0, home ? view.length : shown).map(card).join("");
+  observeImgs(wall);
+  renderMore();
+  const none = view.length === 0;
+  $("empty").hidden = !none;
+  if (none){
+    if (state.saved && saved.size === 0) $("emptyText").textContent = "Dar nieko neišsaugojote. Atidarykite objektą ir spauskite „Išsaugoti“.";
+    else if (state.cat === "community" && !ALL.some(d => d.via === "community")) $("emptyText").textContent = canUpload ? "Bendruomenės darbų dar nėra. Būkite pirmi: spauskite „Įkelti savo darbą“." : "Bendruomenės darbų dar nėra.";
+    else $("emptyText").textContent = "Nieko nerasta. Pabandykite kitą žodį, spalvą ar regioną arba išvalykite filtrus.";
+  }
+  $("savedN").textContent = saved.size;
+  $("savedToggle").setAttribute("aria-pressed", state.saved);
+  renderIndex(); renderFams(); renderRegs(); renderTechs(); renderHowto();
+}
+function setCat(k){
+  shown = PAGE;
+  if (k === "home"){ state.cat = "all"; state.all = false; state.q = ""; $("q").value = ""; state.fam = null; state.hex = null; hexTarget = null; state.reg = null; }
+  else if (k === "all") state.all = true;
+  if (k !== "home") state.cat = k;
+  state.tech = null; state.saved = false;
+  const c = CAT[k];
+  try { history.replaceState(null, "", !c || k === "all" || k === "home" ? location.pathname + location.search : "#" + c.s); } catch (e) {}
+  render();
+}
+function setHex(h){
+  shown = PAGE;
+  state.hex = h && HEX.test(h) ? h.toLowerCase() : null;
+  hexTarget = state.hex ? hexRgb(state.hex) : null;
+  if (state.hex) state.fam = null;
+  render();
+}
+
+/* ---------- Detail ---------- */
+const dlg = $("dlg");
+function facts(d, authorName){
+  const rows = [];
+  if (d.tech) rows.push(["Technika", esc(d.tech)]);
+  if (d.via === "community") rows.push(["Įkėlė", esc(authorName || "Bendruomenės narys")]);
+  else if (d.creator) rows.push(["Autorius", esc(d.creator)]);
+  if (d.place) rows.push(["Kilmės vieta", esc(d.place)]);
+  if (d.reg) rows.push(["Regionas", esc(d.reg)]);
+  if (d.date) rows.push(["Datavimas", esc(d.date)]);
+  if (d.mat && d.mat.length) rows.push(["Medžiagos", esc(d.mat.join(", "))]);
+  if (d.via === "community"){
+    if (d.link) rows.push(["Nuoroda", `<a href="${esc(d.link)}" target="_blank" rel="noopener nofollow">${esc(d.link.replace(/^https:\/\//, ""))}</a>`]);
+  } else {
+    rows.push([d.via === "commons" ? "Šaltinis" : "Muziejus", esc(d.provider)]);
+    rows.push(["Licencija", d.rights ? `<a href="${esc(d.rights)}" target="_blank" rel="noopener">${esc(d.rl)}</a>` : esc(d.rl)]);
+  }
+  return rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+}
+let delArmed = false;
+async function openDetail(i){
+  current = i; const d = view[i]; if (!d) return;
+  const img = $("dImg"), fig = $("dFig");
+  fig.classList.remove("broken"); img.removeAttribute("src"); img.alt = d.title;
+  img.onerror = () => fig.classList.add("broken");
+  srcFor(d).then(src => { if (view[current] === d) img.src = src; }, () => fig.classList.add("broken"));
+  $("dCat").textContent = (CAT[d.cat] || COMM).n + (d.via === "community" ? " · Bendruomenė" : "");
+  $("dTitle").textContent = d.title;
+  $("dFacts").innerHTML = facts(d, "");
+  if (d.via === "community" && userCap && d.author){
+    userCap.profiles([d.author]).then(ps => { if (view[current] === d) $("dFacts").innerHTML = facts(d, ps[d.author] && ps[d.author].name); }).catch(() => {});
+  }
+  const desc = $("dDesc"); desc.textContent = d.desc || (d.via === "community" ? "" : "Muziejus aprašo nepateikė."); desc.hidden = !desc.textContent;
+  desc.classList.toggle("more", (d.desc || "").length > 420);
+  $("dMore").hidden = (d.desc || "").length <= 420;
+  $("dSw").innerHTML = d.pal.map(h => `<span class="swg"><button class="swatch" type="button" data-hex="${h}"><i style="background:${h}"></i><span>${h.toUpperCase()}</span></button><button class="swfind" type="button" data-find="${h}" aria-label="Rasti objektų panašia spalva ${h.toUpperCase()}" title="Rasti panašių">${ICON_FIND}</button></span>`).join("");
+  const src = $("dSrc"), eu = $("dEu"), att = $("dAttach");
+  if (d.via === "community"){ src.hidden = true; eu.hidden = true; }
+  else {
+    src.hidden = !d.source; src.href = d.source || "#";
+    src.textContent = d.via === "commons" ? "Wikimedia Commons ↗" : "Muziejaus įrašas ↗";
+    eu.hidden = !d.europeana; eu.href = d.europeana || "#";
+  }
+  att.hidden = !(d.via === "community" && d.attach); if (!att.hidden) att.href = "/_blob/" + d.attach;
+  delArmed = false; const del = $("dDel"); del.textContent = "Ištrinti";
+  del.hidden = !(d.via === "community" && (isOwner || (myId && d.author === myId)));
+  syncSave(d);
+  $("dPos").textContent = (i + 1) + " / " + view.length;
+  $("dPrev").disabled = i <= 0; $("dNext").disabled = i >= view.length - 1;
+  if (!dlg.open) dlg.showModal();
+  dlg.scrollTop = 0;
+  requestAnimationFrame(() => drawDetailWeave($("dBand"), d.pal));
+}
+function syncSave(d){
+  const on = saved.has(d.id);
+  $("dSave").innerHTML = ICON_SAVE + (on ? "Išsaugota" : "Išsaugoti");
+  $("dSave").setAttribute("aria-pressed", on);
+}
+function toggleSave(id){
+  saved.has(id) ? saved.delete(id) : saved.add(id); persist();
+  $("savedN").textContent = saved.size;
+  document.querySelectorAll(`[data-save="${CSS.escape(id)}"]`).forEach(b => b.setAttribute("aria-pressed", saved.has(id)));
+}
+let toastT;
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2600); }
+
+/* ---------- Community uploads (db + assets) ---------- */
+let dbCap = null, assetsCap = null, userCap = null, myId = null, isOwner = false, commReady = false, canUpload = false;
+const ASSET_ID = /^[A-Za-z0-9_-]{8,80}$/;
+const clip = (s, n) => typeof s === "string" ? s.trim().slice(0, n) : "";
+function fromRow(it, author){
+  if (!it || typeof it !== "object" || !ASSET_ID.test(it.asset || "") || !CAT[it.cat] || it.cat === "community") return null;
+  const k = clip(it.k, 40).replace(/[^A-Za-z0-9_-]/g, ""); if (!k) return null;
+  const link = clip(it.link, 300);
+  return prep({
+    id: "c_" + author.slice(0, 24).replace(/[^A-Za-z0-9_-]/g, "") + "_" + k, k, via: "community", author, cat: it.cat,
+    title: clip(it.title, 120) || "Be pavadinimo", desc: clip(it.desc, 2000), place: clip(it.place, 120),
+    reg: REGS.includes(it.reg) ? it.reg : "", mat: Array.isArray(it.mat) ? it.mat.map(m => clip(m, 60)).filter(Boolean).slice(0, 8) : [],
+    link: /^https:\/\/[^\s"<>]+$/.test(link) ? link : "", asset: it.asset, attach: ASSET_ID.test(it.attach || "") ? it.attach : "",
+    w: Math.min(10000, Math.max(1, +it.w || 1)), h: Math.min(10000, Math.max(1, +it.h || 1)),
+    pal: Array.isArray(it.pal) ? it.pal.slice(0, 5) : [], fam: Array.isArray(it.fam) ? it.fam.filter(f => FAMS.some(x => x.k === f) || f === "violetinė").slice(0, 6) : [],
+    created: +it.created || 0, tech: ""
+  });
+}
+function rebuildAll(){
+  ALL = DATA.concat(community);
+  byId.clear(); ALL.forEach(d => byId.set(d.id, d));
+  reshuffle(); render();
+}
+async function initCommunity(){
+  if (!window.claude || typeof window.claude.use !== "function") return;
+  const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+  if (!db) return;
+  dbCap = db; userCap = user;
+  if (user){ myId = await user.id(); isOwner = await user.isOwner(); }
+  commReady = true; $("aboutComm").hidden = false;
+  db.collection("subs").onSnapshot(snap => {
+    const next = [];
+    snap.docs.forEach(doc => {
+      const body = doc.data(); const items = body && Array.isArray(body.items) ? body.items : [];
+      items.forEach(it => { const d = fromRow(it, doc.id); if (d) next.push(d); });
+    });
+    next.sort((a, b) => b.created - a.created);
+    community = next; rebuildAll();
+  }, () => {});
+  render();
+  const assets = await claude.use("assets");
+  assetsCap = assets;
+  canUpload = !!(assets && myId);
+  $("uploadBtn").hidden = !canUpload;
+}
+
+// Palette in the browser, same idea as for museum images: drop the background, cluster the rest
+function famOf([r, g, b]){
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, dd = mx - mn;
+  let s = 0, h = 0;
+  if (dd){ s = l > 0.5 ? dd / (2 - mx - mn) : dd / (mx + mn); h = mx === r ? (g - b) / dd + (g < b ? 6 : 0) : mx === g ? (b - r) / dd + 2 : (r - g) / dd + 4; h *= 60; }
+  if (l < 0.17) return "juoda"; if (l > 0.80 && s < 0.35) return "balta"; if (s < 0.16 || (s < 0.25 && l < 0.3)) return "pilka";
+  if (h >= 15 && h < 48 && l < 0.42) return "ruda"; if (h < 12 || h >= 345) return "raudona"; if (h < 40) return "oranžinė";
+  if (h < 68) return "geltona"; if (h < 170) return "žalia"; if (h < 255) return "mėlyna"; if (h < 300) return "violetinė"; return "rožinė";
+}
+function paletteOf(canvas){
+  const s = 80 / Math.max(canvas.width, canvas.height);
+  const w = Math.max(1, Math.round(canvas.width * s)), h = Math.max(1, Math.round(canvas.height * s));
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const x = c.getContext("2d"); x.drawImage(canvas, 0, 0, w, h);
+  const px = x.getImageData(0, 0, w, h).data, all = [], border = [];
+  for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++){
+    const i = (yy * w + xx) * 4, p = [px[i], px[i + 1], px[i + 2]]; all.push(p);
+    if (xx < 2 || yy < 2 || xx >= w - 2 || yy >= h - 2) border.push(p);
+  }
+  const bg = [0, 1, 2].map(k => border.map(p => p[k]).sort((a, b) => a - b)[border.length >> 1]);
+  let fg = all.filter(p => dist(p, bg) > 42); if (fg.length < all.length * 0.12) fg = all;
+  const K = Math.min(6, fg.length);
+  let cent = Array.from({ length: K }, (_, k) => fg[Math.floor((k + 0.5) * fg.length / K)].slice());
+  let cnt = new Array(K).fill(0);
+  for (let it = 0; it < 8; it++){
+    const sum = cent.map(() => [0, 0, 0]); cnt = new Array(K).fill(0);
+    for (const p of fg){ let bi = 0, bd = Infinity; for (let k = 0; k < K; k++){ const dv = dist(p, cent[k]); if (dv < bd){ bd = dv; bi = k; } } sum[bi][0] += p[0]; sum[bi][1] += p[1]; sum[bi][2] += p[2]; cnt[bi]++; }
+    cent = cent.map((c0, k) => cnt[k] ? sum[k].map(v => v / cnt[k]) : c0);
+  }
+  let cols = cent.map((c0, k) => ({ rgb: c0.map(Math.round), share: cnt[k] / fg.length })).sort((a, b) => b.share - a.share);
+  const merged = [];
+  for (const c0 of cols){ const m = merged.find(o => dist(o.rgb, c0.rgb) < 30); if (m) m.share += c0.share; else merged.push(c0); }
+  cols = merged.filter(c0 => c0.share >= 0.05).sort((a, b) => b.share - a.share).slice(0, 5);
+  const pal = cols.map(c0 => "#" + c0.rgb.map(v => v.toString(16).padStart(2, "0")).join(""));
+  const famShare = {}; cols.forEach(c0 => { const f = famOf(c0.rgb); famShare[f] = (famShare[f] || 0) + c0.share; });
+  const fam = Object.keys(famShare).filter(f => famShare[f] >= 0.10).sort((a, b) => famShare[b] - famShare[a]);
+  return { pal, fam };
+}
+let prepared = null;
+async function prepareImage(file){
+  const bmp = await createImageBitmap(file);
+  const sc = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width * sc); c.height = Math.round(bmp.height * sc);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  const blob = await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error("encode")), "image/jpeg", 0.86));
+  return { blob, w: c.width, h: c.height, ...paletteOf(c), preview: URL.createObjectURL(blob) };
+}
+const UP_ERR = {
+  too_large: "Failas per didelis. Didžiausias dydis yra 20 MB.",
+  unsupported_type: "Šio tipo failo įkelti negalima. Naudokite JPG, PNG, WEBP arba PDF.",
+  quota_or_state: "Puslapio saugykla pilna, todėl įkelti dabar negalima.",
+  rate_limited: "Per daug bandymų iš eilės. Pabandykite po minutės.",
+  not_granted: "Šiame lange įkelti negalima. Atidarykite puslapį prisijungę.",
+  upstream_auth: "Prisijunkite iš naujo ir bandykite dar kartą.",
+  quota_exceeded: "Pasiektas įrašų limitas, todėl naujo darbo įkelti negalima."
+};
+function upStatus(msg, err){ const s = $("upStatus"); s.textContent = msg; s.classList.toggle("err", !!err); }
+function fillSelects(){
+  $("upCat").innerHTML = '<option value="">Pasirinkite</option>' + CATS.map(c => `<option value="${c.k}">${esc(c.n)}</option>`).join("");
+  $("upReg").innerHTML = '<option value="">Nenurodyta</option>' + REGS.map(r => `<option>${r}</option>`).join("");
+}
+$("uploadBtn").addEventListener("click", () => { $("upForm").reset(); prepared = null; $("upPrev").hidden = true; upStatus(""); $("up").showModal(); });
+$("upClose").addEventListener("click", () => $("up").close());
+$("upCancel").addEventListener("click", () => $("up").close());
+$("upFile").addEventListener("change", async e => {
+  const f = e.target.files[0]; prepared = null; $("upPrev").hidden = true; upStatus("");
+  if (!f) return;
+  if (f.size > 20 * 1024 * 1024){ upStatus(UP_ERR.too_large, true); return; }
+  upStatus("Ruošiama nuotrauka…");
+  try { prepared = await prepareImage(f); $("upPrev").src = prepared.preview; $("upPrev").hidden = false; upStatus(""); }
+  catch (err) { upStatus("Šios nuotraukos atidaryti nepavyko. Išsaugokite ją kaip JPG arba PNG ir bandykite dar kartą.", true); }
+});
+let uploading = false;
+$("upForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (uploading) return;
+  const title = $("upName").value.trim(), cat = $("upCat").value;
+  if (!prepared) return upStatus("Pasirinkite nuotrauką.", true);
+  if (!title) return upStatus("Įrašykite pavadinimą.", true);
+  if (!cat) return upStatus("Pasirinkite rūšį.", true);
+  const link = $("upLink").value.trim();
+  if (link && !/^https:\/\/[^\s"<>]+$/.test(link)) return upStatus("Nuoroda turi prasidėti „https://“.", true);
+  if (!$("upOk").checked) return upStatus("Pažymėkite, kad turite teisę rodyti šį darbą.", true);
+  const attachFile = $("upAttach").files[0];
+  if (attachFile && attachFile.size > 20 * 1024 * 1024) return upStatus(UP_ERR.too_large, true);
+  uploading = true; $("upSubmit").disabled = true;
+  let main = null, extra = null;
+  try {
+    upStatus("Įkeliama nuotrauka…");
+    main = await assetsCap.upload(prepared.blob, { type: "image/jpeg" });
+    if (attachFile){
+      upStatus("Įkeliama papildoma medžiaga…");
+      const t = attachFile.type || (/\.pdf$/i.test(attachFile.name) ? "application/pdf" : "");
+      extra = await assetsCap.upload(attachFile, t ? { type: t } : undefined);
+    }
+    upStatus("Išsaugoma…");
+    const ref = dbCap.doc("subs/" + myId);
+    const snap = await ref.get();
+    const items = snap.exists && Array.isArray(snap.data().items) ? snap.data().items.slice() : [];
+    if (items.length >= 60) throw { code: "quota_exceeded" };
+    const entry = {
+      k: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), cat, title: title.slice(0, 120),
+      desc: $("upDesc").value.trim().slice(0, 2000), place: $("upPlace").value.trim().slice(0, 120), reg: $("upReg").value,
+      mat: $("upMat").value.split(",").map(s => s.trim()).filter(Boolean).slice(0, 8), link,
+      asset: main.id, attach: extra ? extra.id : "", w: prepared.w, h: prepared.h, pal: prepared.pal, fam: prepared.fam, created: Date.now()
+    };
+    items.push(entry);
+    await ref.set({ items });
+    $("up").close(); toast("Darbas įkeltas. Ačiū!");
+    setCat("community");
+  } catch (err) {
+    const code = err && err.code;
+    upStatus(UP_ERR[code] || "Įkelti nepavyko. Bandykite dar kartą.", true);
+    // nothing points at a half-finished upload, so remove it
+    try { if (main && assetsCap) await assetsCap.delete(main.id); if (extra && assetsCap) await assetsCap.delete(extra.id); } catch (e2) {}
+  } finally { uploading = false; $("upSubmit").disabled = false; }
+});
+$("dDel").addEventListener("click", async () => {
+  const d = view[current]; if (!d || d.via !== "community" || !dbCap) return;
+  const btn = $("dDel");
+  if (!delArmed){ delArmed = true; btn.textContent = "Tikrai ištrinti?"; return; }
+  btn.disabled = true;
+  try {
+    const ref = dbCap.doc("subs/" + d.author);
+    const snap = await ref.get();
+    const items = snap.exists && Array.isArray(snap.data().items) ? snap.data().items.filter(it => !(it && it.k === d.k)) : [];
+    await ref.set({ items });
+    if (assetsCap){ try { await assetsCap.delete(d.asset); if (d.attach) await assetsCap.delete(d.attach); } catch (e2) {} }
+    dlg.close(); toast("Darbas ištrintas.");
+  } catch (err) { btn.textContent = "Ištrinti nepavyko"; }
+  finally { btn.disabled = false; delArmed = false; }
+});
+
+/* ---------- Events ---------- */
+$("cats").addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (b) setCat(b.dataset.cat); });
+$("fams").addEventListener("click", e => { const b = e.target.closest("[data-fam]"); if (!b) return; shown = PAGE; state.fam = state.fam === b.dataset.fam ? null : b.dataset.fam; if (state.fam){ state.hex = null; hexTarget = null; } render(); });
+$("hexChip").addEventListener("click", e => { if (e.target.closest("#hexClear")) setHex(null); });
+let hexT; $("hex").addEventListener("input", e => { clearTimeout(hexT); hexT = setTimeout(() => setHex(e.target.value), 120); });
+$("regs").addEventListener("click", e => { const b = e.target.closest("[data-reg]"); if (!b || b.disabled) return; shown = PAGE; state.reg = state.reg === b.dataset.reg ? null : b.dataset.reg; render(); });
+$("techs").addEventListener("click", e => { const b = e.target.closest("[data-tech]"); if (!b) return; shown = PAGE; state.tech = state.tech === b.dataset.tech ? null : b.dataset.tech; render(); });
+let qTimer; $("q").addEventListener("input", e => { clearTimeout(qTimer); qTimer = setTimeout(() => { state.q = e.target.value.trim(); shown = PAGE; render(); }, 160); });
+$("more").addEventListener("click", () => {
+  if (isHome()){ setCat("all"); $("secTitle").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }); return; }
+  const from = shown; shown += PAGE;
+  const wall = $("wall"); wall.insertAdjacentHTML("beforeend", view.slice(from, shown).map((d, k) => card(d, from + k)).join(""));
+  observeImgs(wall); renderMore();
+  $("count").textContent = (hexTarget ? "Pagal atspalvį: " : "") + (view.length > shown ? "Rodoma " + shown + " iš " + view.length : objektai(view.length));
+});
+$("shuffle").addEventListener("click", () => { state.seed = Math.floor(Math.random() * 1e9); reshuffle(); render(); });
+$("savedToggle").addEventListener("click", () => { state.saved = !state.saved; shown = PAGE; render(); });
+$("clear").addEventListener("click", () => { state.q = ""; $("q").value = ""; state.fam = null; state.hex = null; hexTarget = null; state.reg = null; state.tech = null; state.saved = false; render(); });
+$("wall").addEventListener("click", e => {
+  const s = e.target.closest("[data-save]");
+  if (s){ toggleSave(s.dataset.save); s.setAttribute("aria-label", saved.has(s.dataset.save) ? "Pašalinti iš išsaugotų" : "Išsaugoti"); if (state.saved) render(); return; }
+  const b = e.target.closest("[data-i]"); if (b) openDetail(+b.dataset.i);
+});
+$("dClose").addEventListener("click", () => dlg.close());
+dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
+$("up").addEventListener("click", e => { if (e.target === $("up")) $("up").close(); });
+dlg.addEventListener("close", () => { if (state.saved) render(); });
+$("dPrev").addEventListener("click", () => openDetail(current - 1));
+$("dNext").addEventListener("click", () => openDetail(current + 1));
+$("dSave").addEventListener("click", () => { const d = view[current]; if (!d) return; toggleSave(d.id); syncSave(d); });
+$("dMore").addEventListener("click", () => { $("dDesc").classList.remove("more"); $("dMore").hidden = true; });
+$("dSw").addEventListener("click", e => {
+  const f = e.target.closest("[data-find]");
+  if (f){ dlg.close(); state.cat = "all"; state.saved = false; state.reg = null; state.tech = null; $("hex").value = f.dataset.find; setHex(f.dataset.find); $("wall").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }); return; }
+  const b = e.target.closest("[data-hex]"); if (!b) return;
+  const label = b.querySelector("span"), hex = b.dataset.hex.toUpperCase();
+  const done = ok => { label.textContent = ok ? "Nukopijuota" : hex; setTimeout(() => label.textContent = hex, 1200); };
+  try { navigator.clipboard.writeText(hex).then(() => done(true), () => selectText(label)); } catch (err) { selectText(label); }
+});
+function selectText(el){ const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+document.addEventListener("keydown", e => {
+  if (!dlg.open) return;
+  if (e.key === "ArrowLeft" && current > 0) openDetail(current - 1);
+  if (e.key === "ArrowRight" && current < view.length - 1) openDetail(current + 1);
+});
+let rT, lastW = 0; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(() => { if (document.documentElement.clientWidth !== lastW){ lastW = document.documentElement.clientWidth; if (state.mode === "collage") renderCollage(); else layoutStage(); } if (dlg.open && view[current]) drawDetailWeave($("dBand"), view[current].pal); }, 150); });
+$("navHow").addEventListener("click", e => {
+  e.preventDefault();
+  if (state.saved || state.cat === "community"){ state.saved = false; setCat("all"); }
+  const d = document.querySelector("#howto details"); if (d) d.open = true;
+  $("howto").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+});
+
+/* ---------- Collage view: scraps from the chest ---------- */
+const CAT_TONE = { juostos: "--madder", sodai: "--ochre", "margučiai": "--rose", verbos: "--birch", karpiniai: "--ink", "rūpintojėliai": "--amber", "kryžiai": "--indigo", "lovatiesės": "--plum", "rankšluosčiai": "--birch", "pirštinės": "--madder", "drabužiai": "--indigo", "prieverpstės": "--amber", skrynios: "--plum", "kaukės": "--ink" };
+const COLLAGE_STEP = 60;
+let collageLimit = 90, scrapList = [], zTop = 3000;
+const clArea = $("clArea");
+function shortText(t, n){ t = String(t || "").replace(/\s+/g, " ").trim(); return t.length > n ? t.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : t; }
+function firstSentence(t){ const m = String(t || "").match(/^.*?[.!?](\s|$)/); return shortText(m ? m[0] : t, 80); }
+// Text scraps only quote what the record itself says
+function scrapText(d, r){
+  const opts = [["label", shortText(d.title, 38)], ["pill", (CAT[d.cat] || COMM).n]];
+  if (d.desc && d.desc.length > 30) if (r() < .55) opts.push(["quote", firstSentence(d.desc)]);
+  if (d.pal && d.pal[0]) opts.push(["hex", d.pal[0]]);
+  if (d.mat && d.mat.length) opts.push(["mat", shortText(d.mat[0], 30)]);
+  if (d.place) opts.push(["big", shortText(d.place.split(",")[0], 22)]);
+  if (d.reg) opts.push(["big", d.reg]);
+  if (d.date) opts.push(["date", shortText(d.date, 28)]);
+  if (d.tech) opts.push(["pill", d.tech + " juosta"]);
+  return opts[Math.floor(r() * opts.length)];
+}
+function buildScraps(items){
+  const r = rng(state.seed + 99), out = [];
+  items.forEach((d, i) => {
+    out.push({ kind: "img", d, i });
+    const n = r() < .55 ? 1 : (r() < .25 ? 2 : 0);
+    for (let k = 0; k < n; k++){ const [kind, text] = scrapText(d, r); out.push({ kind, text, d, i }); }
+    if (r() < .07) out.push({ kind: "sash", d, i });
+  });
+  return out;
+}
+function placeScraps(scraps){
+  const W = Math.max(320, clArea.clientWidth), r = rng(state.seed + 7);
+  const cell = W < 600 ? 104 : W < 1000 ? 136 : 164;
+  const cols = Math.max(3, Math.round(W / cell)), cw = W / cols, ch = cell * .8;
+  const solid = scraps.filter(s => s.kind === "img" || s.kind === "sash"), texts = scraps.filter(s => !(s.kind === "img" || s.kind === "sash"));
+  const rows = Math.max(4, Math.ceil(solid.length / cols));
+  const slots = []; for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) slots.push([x, y]);
+  for (let i = slots.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [slots[i], slots[j]] = [slots[j], slots[i]]; }
+  solid.forEach((s, k) => {
+    const [cx, cy] = slots[k % slots.length];
+    if (s.kind === "sash"){ s.w = Math.round(cw * (1.8 + r() * 1.4)); s.h = 0; }
+    else {
+      const ar = Math.max(.25, Math.min(4, (+s.d.h || 1) / (+s.d.w || 1)));
+      s.w = Math.round(cw * (.8 + r() * .95) * (ar > 1.8 ? .62 : 1));
+      s.h = s.w * ar;
+    }
+    const hh = Math.min(s.h || 60, ch * 2.4);
+    s.x = Math.round(cx * cw + cw / 2 - s.w / 2 + (r() - .5) * cw * .75);
+    s.y = Math.round(cy * ch + ch / 2 - hh / 2 + (r() - .5) * ch * .7);
+    s.x = Math.max(-s.w * .12, Math.min(W - s.w * .88, s.x));
+    s.y = Math.max(8, s.y);
+    s.rot = +((r() - .5) * (s.kind === "sash" ? 16 : 5)).toFixed(2);
+    s.z = 1 + Math.floor(r() * 60);
+  });
+  texts.forEach(s => {
+    s.x = Math.round(r() * (W - 160)); s.y = Math.round(16 + r() * (rows * ch - 20));
+    s.rot = +((r() - .5) * 8).toFixed(2); s.z = 70 + Math.floor(r() * 60);
+  });
+  scraps.forEach(s => { s.dx = +((r() - .5) * 12).toFixed(1); s.dy = +((r() - .5) * 12).toFixed(1); s.dur = +(5 + r() * 7).toFixed(1); s.delay = -(r() * 8).toFixed(1); });
+  clArea.style.height = Math.round(rows * ch + ch * 2.4) + "px";
+}
+function scrapHTML(s, k){
+  const d = s.d;
+  const st = `left:${s.x}px;top:${s.y}px;${s.kind === "img" || s.kind === "sash" ? `width:${s.w}px;` : ""}z-index:${s.z};--rot:${s.rot}deg;--dx:${s.dx}px;--dy:${s.dy}px;--dur:${s.dur}s;--delay:${s.delay}s`;
+  let inner;
+  if (s.kind === "img") inner = `<span class="sc-img" style="aspect-ratio:${Math.max(1, +d.w || 1)}/${Math.max(1, +d.h || 1)};--ph:${d.pal[0] || "#cccccc"}"><img data-id="${esc(d.id)}" alt="" decoding="async" draggable="false"></span>`;
+  else if (s.kind === "sash") inner = `<canvas class="sc-sash" data-sash="${k}"></canvas>`;
+  else if (s.kind === "hex") inner = `<span class="sc-t sc-hex"><i style="background:${HEX.test(s.text) ? s.text : "#cccccc"}"></i>${esc(s.text.toUpperCase())}</span>`;
+  else if (s.kind === "pill") inner = `<span class="sc-t sc-pill" style="background:var(${CAT_TONE[d.cat] || "--ink"})">${esc(s.text)}</span>`;
+  else inner = `<span class="sc-t sc-${s.kind}">${esc(s.text)}</span>`;
+  return `<button class="scrap scrap-${s.kind}" type="button" data-i="${s.i}" style="${st}" aria-label="${esc(d.title)}">${inner}</button>`;
+}
+function drawSashScraps(){
+  clArea.querySelectorAll("canvas[data-sash]").forEach(cv => {
+    const s = scrapList[+cv.dataset.sash]; if (!s) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2), cell = 2.4;
+    const motif = [MA, MC, MD][(+cv.dataset.sash) % 3];
+    const t = weaveTile(motif, weavePalette(s.d.pal), Math.max(1, Math.round(cell * dpr)), Math.max(1, Math.round(cell * 1.3 * dpr)));
+    cv.width = Math.round(s.w * dpr); cv.height = t.H; cv.style.height = (t.H / dpr) + "px";
+    const ctx = cv.getContext("2d"); ctx.imageSmoothingEnabled = false;
+    for (let x = 0; x < cv.width; x += t.W) ctx.drawImage(t.cv, 0, 0, t.W, t.H, x, 0, t.W, t.H);
+  });
+}
+function syncBar(){
+  $("clQ").value = state.q;
+  $("clCat").value = state.cat === "all" ? "" : state.cat;
+  $("clFam").value = state.fam || "";
+  $("clReg").value = state.reg || "";
+}
+function renderCollage(){
+  const all = order.map(i => ALL[i]).filter(d => matches(d));
+  const items = all.slice(0, collageLimit);
+  view = items;
+  scrapList = buildScraps(items);
+  placeScraps(scrapList);
+  if (io) io.disconnect();
+  clArea.innerHTML = scrapList.map(scrapHTML).join("");
+  observeImgs(clArea);
+  drawSashScraps();
+  $("clCount").textContent = items.length + " iš " + all.length;
+  $("clMore").hidden = all.length <= items.length;
+  $("clEmpty").hidden = items.length > 0;
+  $("clSub").textContent = `Skiautės iš ${ALL.length} rankdarbių. Tempkite, maišykite, spauskite, kad atvertumėte.`;
+  syncBar();
+  document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === state.mode));
+}
+function fillBarSelects(){
+  $("clCat").innerHTML = '<option value="">Visos rūšys</option>' + CATS.map(c => `<option value="${c.k}">${esc(c.n)}</option>`).join("");
+  $("clFam").innerHTML = '<option value="">Visos spalvos</option>' + FAMS.map(f => `<option value="${f.k}">${esc(f.n)}</option>`).join("");
+  $("clReg").innerHTML = '<option value="">Visi regionai</option>' + REGS.map(r => `<option>${r}</option>`).join("");
+}
+function setMode(m){
+  state.mode = m === "collage" ? "collage" : "catalog";
+  const col = state.mode === "collage";
+  $("collage").hidden = !col; $("clBar").hidden = !col;
+  document.querySelector(".hero").hidden = col; $("rodykle").hidden = col;
+  if (col){ state.saved = false; state.tech = null; collageLimit = 90; }
+  try { history.replaceState(null, "", col ? "#koliazas" : location.pathname + location.search); } catch (e) {}
+  document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === state.mode));
+  if (!col){ $("q").value = state.q; play(); } else pause();
+  render();
+  window.scrollTo(0, 0);
+}
+// Drag with a mouse or pen; a tap or click opens the object
+let drag = null, swallowClick = false;
+clArea.addEventListener("pointerdown", e => {
+  const el = e.target.closest(".scrap");
+  if (!el || e.pointerType === "touch" || e.button !== 0) return;
+  drag = { el, id: e.pointerId, sx: e.clientX, sy: e.clientY, x: parseFloat(el.style.left), y: parseFloat(el.style.top), moved: false };
+});
+window.addEventListener("pointermove", e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+  if (!drag.moved){
+    if (Math.hypot(dx, dy) < 5) return;
+    drag.moved = true; drag.el.classList.add("dragging"); drag.el.style.zIndex = ++zTop;
+  }
+  drag.el.style.left = (drag.x + dx) + "px"; drag.el.style.top = (drag.y + dy) + "px";
+});
+window.addEventListener("pointerup", () => {
+  if (drag && drag.moved){ drag.el.classList.remove("dragging"); swallowClick = true; setTimeout(() => { swallowClick = false; }, 0); }
+  drag = null;
+});
+clArea.addEventListener("click", e => {
+  const el = e.target.closest(".scrap"); if (!el) return;
+  if (swallowClick){ e.preventDefault(); return; }
+  el.style.zIndex = ++zTop;
+  openDetail(+el.dataset.i);
+});
+document.addEventListener("click", e => { const b = e.target.closest("[data-mode]"); if (b) setMode(b.dataset.mode); });
+$("clShuffle").addEventListener("click", () => { state.seed = Math.floor(Math.random() * 1e9); reshuffle(); render(); });
+$("clMore").addEventListener("click", () => { const y = window.scrollY; collageLimit += COLLAGE_STEP; render(); window.scrollTo(0, y); });
+let clQT; $("clQ").addEventListener("input", e => { clearTimeout(clQT); clQT = setTimeout(() => { state.q = e.target.value.trim(); render(); }, 200); });
+$("clCat").addEventListener("change", e => { state.cat = e.target.value || "all"; state.all = true; render(); });
+$("clFam").addEventListener("change", e => { state.fam = e.target.value || null; state.hex = null; hexTarget = null; render(); });
+$("clReg").addEventListener("change", e => { state.reg = e.target.value || null; render(); });
+$("clClear").addEventListener("click", () => { state.q = ""; state.cat = "all"; state.fam = null; state.hex = null; hexTarget = null; state.reg = null; render(); });
+
+/* ---------- Start ---------- */
+const museums = new Set(DATA.filter(d => d.via !== "commons").map(d => d.provider)).size;
+$("lede").textContent = `Daugiau nei ${Math.floor(DATA.length / 100) * 100} juostų, margučių, sodų ir kaukių vienoje skrynioje. Ieškokite pagal spalvą, regioną ar techniką ir rinkitės raštus savo darbams.`;
+$("about1").textContent = `Objektai ir aprašai paimti iš Europeana, kur juos paskelbė ${museums} Lietuvos muziejų ir bibliotekų, o dalis sodų nuotraukų iš Wikimedia Commons. Įtraukti tik įrašai, kurių licencija leidžia juos rodyti nekomerciškai: viešasis domenas, CC BY, CC BY-SA ir CC BY-NC variantai.`;
+fillSelects();
+fillBarSelects();
+const fromHash = location.hash.slice(1);
+const hashCat = CATS.find(c => c.s === fromHash);
+if (hashCat) state.cat = hashCat.k;
+reshuffle();
+render();
+startRibbons();
+if (location.hash === "#koliazas") setMode("collage");
+initCommunity().catch(() => {});
+</script>
