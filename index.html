@@ -294,22 +294,45 @@ footer{border-top:1.5px solid var(--ink)}
 .cl-bar .count{padding:0 6px}
 @media (max-width:700px){ .cl-bar{left:8px;right:8px;transform:none;max-width:none} .cl-bar input{width:130px} .cl-top{position:static} }
 
-/* Collage menu: fixed, white, crafts as the top row of choices */
+/* Collage menu: fixed and white. Crafts read as tabs, filters as filters, actions as text links */
 .cl-menu{position:fixed;top:0;left:0;right:0;z-index:950;background:var(--linen);border-bottom:1.5px solid var(--ink);padding-top:env(safe-area-inset-top,0px)}
-.cl-row{display:flex;align-items:center;justify-content:space-between;gap:10px 20px;padding:10px clamp(16px,3vw,40px) 6px;flex-wrap:wrap}
+.cl-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 28px;padding:12px clamp(16px,3vw,40px) 10px}
 .cl-brand{appearance:none;border:0;background:none;padding:0;font:800 1.45rem/1 var(--display);letter-spacing:-.04em;color:var(--ink);cursor:pointer}
 .cl-brand:hover{color:var(--madder)}
-.cl-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.cl-tools input,.cl-tools select{font:500 .88rem/1.2 var(--display);border:1px solid var(--ink);background:var(--linen);color:var(--ink);padding:8px 10px;border-radius:0;min-width:0}
-.cl-tools input{width:170px}
-.cl-tools .btn{padding:9px 12px}
-.cl-cats{display:flex;gap:2px;overflow-x:auto;padding:0 clamp(16px,3vw,40px) 10px;scrollbar-width:none}
-.cl-cats::-webkit-scrollbar{display:none}
+.cl-toggle{display:none}
+.cl-panel{display:contents}
+.cl-filters{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.cl-search{position:relative;display:block}
+.cl-search svg{position:absolute;left:0;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none}
+.cl-search input{font:400 1rem/1.2 var(--body);border:0;border-bottom:1.5px solid var(--ink);background:transparent;color:var(--ink);padding:6px 4px 6px 22px;width:180px;border-radius:0}
+.cl-search input::placeholder{color:var(--muted)}
+.cl-dots{display:flex;align-items:center;gap:6px}
+.cl-dots .sw{width:18px;height:18px}
+.cl-sel select{font:500 .9rem/1.2 var(--display);border:0;border-bottom:1.5px solid var(--line);background:transparent;color:var(--ink);padding:6px 2px;border-radius:0;cursor:pointer}
+.cl-actions{display:flex;align-items:center;gap:20px;margin-left:auto;flex-wrap:wrap}
+.cl-act{appearance:none;border:0;background:none;padding:6px 0;font:700 .76rem/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink);cursor:pointer;border-bottom:1.5px solid transparent;display:inline-flex;gap:6px;align-items:baseline}
+.cl-act:hover{color:var(--madder)}
+.cl-act[aria-pressed="true"]{border-bottom-color:var(--ink)}
+.cl-act .n{font-weight:500;letter-spacing:0}
+.cl-act.cl-up{background:var(--madder);color:var(--on-accent);padding:8px 12px}
+.cl-act.cl-up:hover{background:var(--ink);color:var(--linen)}
+.cl-cats{flex-basis:100%;display:flex;flex-wrap:wrap;gap:4px 2px;margin:2px -10px 0}
 .cl-cats button{appearance:none;flex:none;border:0;background:transparent;color:var(--ink);font:700 .76rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;cursor:pointer;display:inline-flex;gap:6px;align-items:baseline}
 .cl-cats button .n{font-weight:500;color:var(--muted);letter-spacing:0}
 .cl-cats button:hover{color:var(--madder)}
 .cl-cats button[aria-pressed="true"]{background:var(--ink);color:var(--linen)}
 .cl-cats button[aria-pressed="true"] .n{color:inherit;opacity:.7}
+@media (max-width:760px){
+  .cl-row{justify-content:space-between}
+  .cl-toggle{display:inline-flex;appearance:none;border:1.5px solid var(--ink);background:var(--linen);color:var(--ink);font:700 .78rem/1 var(--display);letter-spacing:.1em;text-transform:uppercase;padding:9px 12px;cursor:pointer}
+  .cl-toggle[aria-expanded="true"]{background:var(--ink);color:var(--linen)}
+  .cl-panel{display:none;flex-basis:100%;flex-direction:column;align-items:stretch;gap:16px;max-height:calc(100vh - 80px);overflow:auto;padding:6px 0 10px}
+  .cl-menu.open .cl-panel{display:flex}
+  .cl-search input{width:100%}
+  .cl-search{flex:1 1 100%}
+  .cl-actions{margin-left:0}
+  .cl-cats{order:-1;margin:0 -10px}
+}
 .collage{padding-top:var(--clmenu,110px)}
 .cl-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 20px;padding-block:24px 8px}
 .cl-head{display:grid;gap:14px}
@@ -339,17 +362,22 @@ footer{border-top:1.5px solid var(--ink)}
   <div class="cl-menu" id="clMenu">
     <div class="cl-row">
       <button class="cl-brand" id="clBrand" type="button">Raštų skrynia</button>
-      <div class="cl-tools">
-        <label class="vh" for="clQ">Ieškoti</label><input id="clQ" type="search" placeholder="Ieškoti…" autocomplete="off">
-        <label class="vh" for="clFam">Spalva</label><select id="clFam"></select>
-        <label class="vh" for="clReg">Regionas</label><select id="clReg"></select>
-        <button class="btn" id="clShuffle" type="button">Sumaišyti</button>
-        <button class="btn" id="howBtn" type="button">Kaip pasidaryti</button>
-        <button class="btn" id="savedToggle" type="button" aria-pressed="false">Išsaugoti <span class="n" id="savedN">0</span></button>
-        <button class="btn primary" id="uploadBtn" type="button" hidden>Įkelti savo darbą</button>
+      <button class="cl-toggle" id="clToggle" type="button" aria-expanded="false" aria-controls="clPanel">Meniu</button>
+      <div class="cl-panel" id="clPanel">
+        <div class="cl-filters">
+          <label class="cl-search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg><span class="vh">Ieškoti</span><input id="clQ" type="search" placeholder="Ieškoti" autocomplete="off"></label>
+          <div class="cl-dots" id="clDots" role="group" aria-label="Spalva"></div>
+          <label class="cl-sel"><span class="vh">Regionas</span><select id="clReg"></select></label>
+        </div>
+        <div class="cl-actions">
+          <button class="cl-act" id="clShuffle" type="button">Sumaišyti</button>
+          <button class="cl-act" id="howBtn" type="button">Kaip pasidaryti</button>
+          <button class="cl-act" id="savedToggle" type="button" aria-pressed="false">Išsaugoti <span class="n" id="savedN">0</span></button>
+          <button class="cl-act cl-up" id="uploadBtn" type="button" hidden>Įkelti savo darbą</button>
+        </div>
+        <nav class="cl-cats" id="clCats" aria-label="Rankdarbių rūšys"></nav>
       </div>
     </div>
-    <nav class="cl-cats" id="clCats" aria-label="Rankdarbių rūšys"></nav>
   </div>
   <div class="cl-head wrap" id="clHead" hidden>
     <div class="cl-head-row"><h2 id="clTitle"></h2><span class="count" id="clCount"></span><span id="clChip"></span><button class="btn" id="clScatter" type="button">Išmėtyti viską</button></div>
@@ -1038,11 +1066,11 @@ function renderMenu(){
   if (commReady) html += b("community", COMM.n, ALL.filter(d => d.via === "community").length);
   html += CATS.map(c => b(c.k, c.n, counts[c.k] || 0)).join("");
   $("clCats").innerHTML = html;
-  document.documentElement.style.setProperty("--clmenu", clMenu.offsetHeight + "px");
+  $("clDots").innerHTML = FAMS.map(f => `<button class="sw" type="button" data-fam="${f.k}" style="background:${f.c}" aria-pressed="${state.fam === f.k}" aria-label="${f.n}" title="${f.n}"></button>`).join("");
+  if (!clMenu.classList.contains("open")) document.documentElement.style.setProperty("--clmenu", clMenu.offsetHeight + "px");
 }
 function syncBar(){
   if (document.activeElement !== $("clQ")) $("clQ").value = state.q;
-  $("clFam").value = state.fam || "";
   $("clReg").value = state.reg || "";
 }
 function renderCollage(){
@@ -1072,11 +1100,10 @@ function renderCollage(){
   renderMenu(); syncBar();
 }
 function fillBarSelects(){
-  $("clFam").innerHTML = '<option value="">Visos spalvos</option>' + FAMS.map(f => `<option value="${f.k}">${esc(f.n)}</option>`).join("");
   $("clReg").innerHTML = '<option value="">Visi regionai</option>' + REGS.map(r => `<option>${r}</option>`).join("");
 }
 function pickInMenu(apply){
-  apply(); tidyLimit = 60;
+  apply(); closeMenu(); tidyLimit = 60;
   render();
   window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
 }
@@ -1116,15 +1143,18 @@ $("clShuffle").addEventListener("click", () => { state.seed = Math.floor(Math.ra
 $("clScatter").addEventListener("click", () => pickInMenu(() => { RESET(); }));
 $("clMore").addEventListener("click", () => { const y = window.scrollY; if (isFiltered()) tidyLimit += TIDY_STEP; else collageLimit += COLLAGE_STEP; render(); window.scrollTo(0, y); });
 let clQT; $("clQ").addEventListener("input", e => { clearTimeout(clQT); clQT = setTimeout(() => { state.q = e.target.value.trim(); tidyLimit = 60; render(); }, 250); });
-$("clFam").addEventListener("change", e => pickInMenu(() => { state.fam = e.target.value || null; state.hex = null; hexTarget = null; }));
+$("clDots").addEventListener("click", e => { const b = e.target.closest("[data-fam]"); if (!b) return; pickInMenu(() => { state.fam = state.fam === b.dataset.fam ? null : b.dataset.fam; state.hex = null; hexTarget = null; }); });
+const closeMenu = () => { clMenu.classList.remove("open"); $("clToggle").setAttribute("aria-expanded", "false"); };
+$("clToggle").addEventListener("click", () => { const open = !clMenu.classList.contains("open"); clMenu.classList.toggle("open", open); $("clToggle").setAttribute("aria-expanded", open); });
 $("clReg").addEventListener("change", e => pickInMenu(() => { state.reg = e.target.value || null; }));
 $("clClear").addEventListener("click", () => pickInMenu(() => { state.q = ""; state.cat = "all"; state.fam = null; state.hex = null; hexTarget = null; state.reg = null; }));
-window.addEventListener("resize", () => document.documentElement.style.setProperty("--clmenu", clMenu.offsetHeight + "px"));
+window.addEventListener("resize", () => { if (!clMenu.classList.contains("open")) document.documentElement.style.setProperty("--clmenu", clMenu.offsetHeight + "px"); });
 $("savedToggle").addEventListener("click", () => pickInMenu(() => { const on = !state.saved; RESET(); state.saved = on; }));
 $("clTechs").addEventListener("click", e => { const b = e.target.closest("[data-tech]"); if (!b || b.disabled) return; pickInMenu(() => { state.tech = state.tech === b.dataset.tech ? null : b.dataset.tech; }); });
 $("clChip").addEventListener("click", e => { if (e.target.closest("#hexClear")) pickInMenu(() => setHex(null)); });
 const howDlg = $("howDlg");
 $("howBtn").addEventListener("click", () => {
+  closeMenu();
   const groups = CATS.filter(c => tutList(c.k).length);
   $("howAll").innerHTML = `<div class="howto"><ul>${groups.map(c => `<li><h3>${esc(c.n)}</h3><ul>${tutList(c.k).map(tutItem).join("")}</ul></li>`).join("")}</ul></div>`;
   howDlg.showModal();
