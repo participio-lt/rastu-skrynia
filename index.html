@@ -934,63 +934,33 @@ document.addEventListener("keydown", e => {
 let rT, lastW = 0; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(() => { if (document.documentElement.clientWidth !== lastW){ lastW = document.documentElement.clientWidth; renderCollage(); } if (dlg.open && view[current]) drawDetailWeave($("dBand"), view[current].pal); }, 150); });
 
 /* ---------- Collage view: scattered scraps, tidied when something is picked ---------- */
-const CAT_TONE = { juostos: "--madder", sodai: "--ochre", "margučiai": "--rose", verbos: "--birch", karpiniai: "--ink", "rūpintojėliai": "--amber", "kryžiai": "--indigo", "lovatiesės": "--plum", "rankšluosčiai": "--birch", "pirštinės": "--madder", "drabužiai": "--indigo", "prieverpstės": "--amber", skrynios: "--plum", "kaukės": "--ink" };
 const COLLAGE_STEP = 60, TIDY_STEP = 60;
 let collageLimit = 90, tidyLimit = 60, scrapList = [], zTop = 3000;
 const clArea = $("clArea"), clMenu = $("clMenu");
 const isFiltered = () => state.cat !== "all" || !!state.fam || !!state.reg || !!state.q || !!state.hex || state.saved || !!state.tech;
 const RESET = () => { state.cat = "all"; state.fam = null; state.reg = null; state.q = ""; state.hex = null; hexTarget = null; state.saved = false; state.tech = null; };
-function shortText(t, n){ t = String(t || "").replace(/\s+/g, " ").trim(); return t.length > n ? t.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : t; }
-function firstSentence(t){ const m = String(t || "").match(/^.*?[.!?](\s|$)/); return shortText(m ? m[0] : t, 80); }
-// Text scraps only quote what the record itself says
-function scrapText(d, r){
-  const opts = [["label", shortText(d.title, 38)], ["pill", (CAT[d.cat] || COMM).n]];
-  if (d.desc && d.desc.length > 30 && r() < .55) opts.push(["quote", firstSentence(d.desc)]);
-  if (d.pal && d.pal[0]) opts.push(["hex", d.pal[0]]);
-  if (d.mat && d.mat.length) opts.push(["mat", shortText(d.mat[0], 30)]);
-  if (d.place) opts.push(["big", shortText(d.place.split(",")[0], 22)]);
-  if (d.reg) opts.push(["big", d.reg]);
-  if (d.date) opts.push(["date", shortText(d.date, 28)]);
-  if (d.tech) opts.push(["pill", d.tech + " juosta"]);
-  return opts[Math.floor(r() * opts.length)];
-}
-function buildScraps(items){
-  const r = rng(state.seed + 99), out = [];
-  items.forEach((d, i) => {
-    out.push({ kind: "img", d, i });
-    const n = r() < .55 ? 1 : (r() < .25 ? 2 : 0);
-    for (let k = 0; k < n; k++){ const [kind, text] = scrapText(d, r); out.push({ kind, text, d, i }); }
-    if (r() < .07) out.push({ kind: "sash", d, i });
-  });
-  return out;
-}
+function buildScraps(items){ return items.map((d, i) => ({ kind: "img", d, i })); }
 function placeScraps(scraps){
   const W = Math.max(320, clArea.clientWidth), r = rng(state.seed + 7);
   const cell = W < 600 ? 104 : W < 1000 ? 136 : 164;
   const cols = Math.max(3, Math.round(W / cell)), cw = W / cols, ch = cell * .8;
-  const solid = scraps.filter(s => s.kind === "img" || s.kind === "sash"), texts = scraps.filter(s => !(s.kind === "img" || s.kind === "sash"));
+  const solid = scraps;
   const rows = Math.max(4, Math.ceil(solid.length / cols));
   const slots = []; for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) slots.push([x, y]);
   for (let i = slots.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [slots[i], slots[j]] = [slots[j], slots[i]]; }
   solid.forEach((s, k) => {
     const [cx, cy] = slots[k % slots.length];
-    if (s.kind === "sash"){ s.w = Math.round(cw * (1.8 + r() * 1.4)); s.h = 0; }
-    else {
-      const ar = Math.max(.25, Math.min(4, (+s.d.h || 1) / (+s.d.w || 1)));
-      s.w = Math.round(cw * (.8 + r() * .95) * (ar > 1.8 ? .62 : 1));
-      s.h = s.w * ar;
-    }
+    const ar = Math.max(.25, Math.min(4, (+s.d.h || 1) / (+s.d.w || 1)));
+    const roll = r(), scale = roll < .12 ? 1.9 + r() * .7 : roll < .4 ? .55 + r() * .3 : .85 + r() * .7;
+    s.w = Math.round(cw * scale * (ar > 1.8 ? .62 : 1));
+    s.h = s.w * ar;
     const hh = Math.min(s.h || 60, ch * 2.4);
     s.x = Math.round(cx * cw + cw / 2 - s.w / 2 + (r() - .5) * cw * .75);
     s.y = Math.round(cy * ch + ch / 2 - hh / 2 + (r() - .5) * ch * .7);
     s.x = Math.max(-s.w * .12, Math.min(W - s.w * .88, s.x));
     s.y = Math.max(8, s.y);
-    s.rot = +((r() - .5) * (s.kind === "sash" ? 16 : 5)).toFixed(2);
-    s.z = 1 + Math.floor(r() * 60);
-  });
-  texts.forEach(s => {
-    s.x = Math.round(r() * (W - 160)); s.y = Math.round(16 + r() * (rows * ch - 20));
-    s.rot = +((r() - .5) * 8).toFixed(2); s.z = 70 + Math.floor(r() * 60);
+    s.rot = +((r() - .5) * 5).toFixed(2);
+    s.z = scale > 1.8 ? 1 + Math.floor(r() * 10) : 10 + Math.floor(r() * 60);
   });
   scraps.forEach(s => { s.dx = +((r() - .5) * 12).toFixed(1); s.dy = +((r() - .5) * 12).toFixed(1); s.dur = +(5 + r() * 7).toFixed(1); s.delay = -(r() * 8).toFixed(1); });
   clArea.style.height = Math.round(rows * ch + ch * 2.4) + "px";
@@ -998,27 +968,10 @@ function placeScraps(scraps){
 function imgInner(d){
   return `<span class="sc-img" style="aspect-ratio:${Math.max(1, +d.w || 1)}/${Math.max(1, +d.h || 1)};--ph:${d.pal[0] || "#cccccc"}"><img data-id="${esc(d.id)}" alt="" decoding="async" draggable="false"></span><span class="sc-cap">${esc(d.title)}</span>`;
 }
-function scrapHTML(s, k){
+function scrapHTML(s){
   const d = s.d;
-  const st = `left:${s.x}px;top:${s.y}px;${s.kind === "img" || s.kind === "sash" ? `width:${s.w}px;` : ""}z-index:${s.z};--rot:${s.rot}deg;--dx:${s.dx}px;--dy:${s.dy}px;--dur:${s.dur}s;--delay:${s.delay}s`;
-  let inner;
-  if (s.kind === "img") inner = imgInner(d);
-  else if (s.kind === "sash") inner = `<canvas class="sc-sash" data-sash="${k}"></canvas>`;
-  else if (s.kind === "hex") inner = `<span class="sc-t sc-hex"><i style="background:${HEX.test(s.text) ? s.text : "#cccccc"}"></i>${esc(s.text.toUpperCase())}</span>`;
-  else if (s.kind === "pill") inner = `<span class="sc-t sc-pill" style="background:var(${CAT_TONE[d.cat] || "--ink"})">${esc(s.text)}</span>`;
-  else inner = `<span class="sc-t sc-${s.kind}">${esc(s.text)}</span>`;
-  return `<button class="scrap scrap-${s.kind}" type="button" data-i="${s.i}" data-id="${esc(d.id)}" style="${st}" aria-label="${esc(d.title)}">${inner}</button>`;
-}
-function drawSashScraps(){
-  clArea.querySelectorAll("canvas[data-sash]").forEach(cv => {
-    const s = scrapList[+cv.dataset.sash]; if (!s) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2), cell = 2.4;
-    const motif = [MA, MC, MD][(+cv.dataset.sash) % 3];
-    const t = weaveTile(motif, weavePalette(s.d.pal), Math.max(1, Math.round(cell * dpr)), Math.max(1, Math.round(cell * 1.3 * dpr)));
-    cv.width = Math.round(s.w * dpr); cv.height = t.H; cv.style.height = (t.H / dpr) + "px";
-    const ctx = cv.getContext("2d"); ctx.imageSmoothingEnabled = false;
-    for (let x = 0; x < cv.width; x += t.W) ctx.drawImage(t.cv, 0, 0, t.W, t.H, x, 0, t.W, t.H);
-  });
+  const st = `left:${s.x}px;top:${s.y}px;width:${s.w}px;z-index:${s.z};--rot:${s.rot}deg;--dx:${s.dx}px;--dy:${s.dy}px;--dur:${s.dur}s;--delay:${s.delay}s`;
+  return `<button class="scrap scrap-img" type="button" data-i="${s.i}" data-id="${esc(d.id)}" style="${st}" aria-label="${esc(d.title)}">${imgInner(d)}</button>`;
 }
 // Scattered: a fresh random collage
 function scatter(items){
@@ -1028,7 +981,6 @@ function scatter(items){
   if (io) io.disconnect();
   clArea.innerHTML = scrapList.map(scrapHTML).join("");
   observeImgs(clArea);
-  drawSashScraps();
 }
 // Tidy: the picked pieces fly into a neat grid, everything else falls away
 function tidyPositions(items){

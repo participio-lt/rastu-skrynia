@@ -8,7 +8,7 @@ Projektą kuria [Lietuvos piliečių mokslo asociacija](https://www.pilieciumoks
 
 ## Ką galima daryti
 
-- Atsidarius puslapį matyti koliažas iš 1411 objektų skiaučių, kaskart išmėtytas vis kitaip. Skiautes galima tempti pele.
+- Atsidarius puslapį matyti koliažas iš įvairaus dydžio objektų nuotraukų, kaskart išmėtytas vis kitaip. Nuotraukas galima tempti pele.
 - Viršutiniame meniu pasirinkus rūšį, spalvą, regioną ar paiešką, skiautės susitvarko į tvarkingą tinklelį. „Visi“ jas vėl išmėto.
 - Pasirinkus juostas, galima rinktis techniką (rinktinė, pintinė ir kitos).
 - Atverti objektą: muziejaus aprašas, kilmės vieta, datavimas, medžiagos, licencija ir nuoroda į pilną įrašą. Iš objekto spalvų galima rasti kitus panašių spalvų objektus.
