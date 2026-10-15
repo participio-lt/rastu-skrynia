@@ -8,10 +8,11 @@ Projektą kuria [Lietuvos piliečių mokslo asociacija](https://www.pilieciumoks
 
 ## Ką galima daryti
 
-- Naršyti 1411 objektų pagal rūšį, spalvą, tikslų atspalvį, etnografinį regioną ir juostų techniką.
-- Perjungti du vaizdus: **Katalogas** (tvarkingas sąrašas) ir **Koliažas** (išmėtytos skiautės, kurias galima tempti).
-- Atverti objektą: muziejaus aprašas, kilmės vieta, datavimas, medžiagos, licencija ir nuoroda į pilną įrašą.
-- Rasti pamokas ir šaltinius skiltyje „Kaip pasidaryti“ (64 patikrintos nuorodos, pirmiausia LNKC nematerialaus paveldo sąvado įrašai).
+- Atsidarius puslapį matyti koliažas iš 1411 objektų skiaučių, kaskart išmėtytas vis kitaip. Skiautes galima tempti pele.
+- Viršutiniame meniu pasirinkus rūšį, spalvą, regioną ar paiešką, skiautės susitvarko į tvarkingą tinklelį. „Visi“ jas vėl išmėto.
+- Pasirinkus juostas, galima rinktis techniką (rinktinė, pintinė ir kitos).
+- Atverti objektą: muziejaus aprašas, kilmės vieta, datavimas, medžiagos, licencija ir nuoroda į pilną įrašą. Iš objekto spalvų galima rasti kitus panašių spalvų objektus.
+- Rasti pamokas ir šaltinius per „Kaip pasidaryti“ (64 patikrintos nuorodos, pirmiausia LNKC nematerialaus paveldo sąvado įrašai).
 - Išsisaugoti patikusius objektus (lieka tik toje naršyklėje).
 
 Lankytojų darbų įkėlimas veikia tik Claude artefakto versijoje, nes jam reikia Claude duomenų saugyklos. GitHub Pages versijoje šis mygtukas nerodomas.

@@ -284,7 +284,7 @@ footer{border-top:1.5px solid var(--ink)}
 .sc-big{font:800 clamp(1.7rem,3.6vw,3.2rem)/.95 var(--display);letter-spacing:-.045em;padding:0;background:none}
 .sc-date{border:2px solid var(--madder);color:var(--madder);background:var(--linen);text-transform:uppercase;letter-spacing:.1em;font-size:.78rem}
 .sc-sash{display:block;width:100%;box-shadow:var(--scrap-shadow)}
-.cl-end{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px;padding:24px 16px 120px}
+.cl-end{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px;padding:28px 16px 48px}
 .cl-end .empty{padding:0;text-align:center}
 .cl-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:960;display:flex;align-items:center;gap:8px;background:var(--linen);border:1.5px solid var(--ink);box-shadow:var(--shadow);padding:8px;max-width:calc(100vw - 24px);overflow-x:auto}
 .cl-bar > *{flex:none}
@@ -292,76 +292,73 @@ footer{border-top:1.5px solid var(--ink)}
 .cl-bar input,.cl-bar select{font:500 .88rem/1.2 var(--display);border:1px solid var(--ink);background:var(--linen);color:var(--ink);padding:9px 10px;border-radius:0;min-width:0}
 .cl-bar input{width:170px}
 .cl-bar .count{padding:0 6px}
-#collage:not([hidden]) ~ footer{padding-bottom:90px}
 @media (max-width:700px){ .cl-bar{left:8px;right:8px;transform:none;max-width:none} .cl-bar input{width:130px} .cl-top{position:static} }
+
+/* Collage menu: fixed, white, crafts as the top row of choices */
+.cl-menu{position:fixed;top:0;left:0;right:0;z-index:950;background:var(--linen);border-bottom:1.5px solid var(--ink);padding-top:env(safe-area-inset-top,0px)}
+.cl-row{display:flex;align-items:center;justify-content:space-between;gap:10px 20px;padding:10px clamp(16px,3vw,40px) 6px;flex-wrap:wrap}
+.cl-brand{appearance:none;border:0;background:none;padding:0;font:800 1.45rem/1 var(--display);letter-spacing:-.04em;color:var(--ink);cursor:pointer}
+.cl-brand:hover{color:var(--madder)}
+.cl-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cl-tools input,.cl-tools select{font:500 .88rem/1.2 var(--display);border:1px solid var(--ink);background:var(--linen);color:var(--ink);padding:8px 10px;border-radius:0;min-width:0}
+.cl-tools input{width:170px}
+.cl-tools .btn{padding:9px 12px}
+.cl-cats{display:flex;gap:2px;overflow-x:auto;padding:0 clamp(16px,3vw,40px) 10px;scrollbar-width:none}
+.cl-cats::-webkit-scrollbar{display:none}
+.cl-cats button{appearance:none;flex:none;border:0;background:transparent;color:var(--ink);font:700 .76rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;cursor:pointer;display:inline-flex;gap:6px;align-items:baseline}
+.cl-cats button .n{font-weight:500;color:var(--muted);letter-spacing:0}
+.cl-cats button:hover{color:var(--madder)}
+.cl-cats button[aria-pressed="true"]{background:var(--ink);color:var(--linen)}
+.cl-cats button[aria-pressed="true"] .n{color:inherit;opacity:.7}
+.collage{padding-top:var(--clmenu,110px)}
+.cl-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 20px;padding-block:24px 8px}
+.cl-head{display:grid;gap:14px}
+.cl-head-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 20px}
+.cl-head-row .btn{margin-left:auto}
+#howDlg{width:min(760px,calc(100vw - 32px))}
+#howDlg .howto{margin:0}
+.cl-head h2{font:800 clamp(1.9rem,4vw,3.2rem)/1 var(--display);letter-spacing:-.045em;margin:0}
+.cl-head .btn{margin-left:auto}
+/* Tidy-up motion: picked pieces glide into a grid, the rest falls away */
+.scrap{transition:left .75s cubic-bezier(.2,.75,.2,1),top .75s cubic-bezier(.2,.75,.2,1),width .75s cubic-bezier(.2,.75,.2,1),opacity .45s ease,transform .75s cubic-bezier(.2,.75,.2,1)}
+.scrap.dragging{transition:none}
+.is-tidy .scrap{animation:none;transform:none}
+.scrap.enter{opacity:0}
+.scrap.gone{opacity:0;pointer-events:none;transform:scale(.8) rotate(var(--rot))}
+.sc-cap{display:none}
+.is-tidy .sc-cap{display:block;font:600 .84rem/1.3 var(--display);padding-top:7px;text-align:left;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.is-tidy .sc-img{box-shadow:none}
+.is-tidy .scrap:hover .sc-cap{color:var(--madder)}
+@media (max-width:700px){ .cl-tools input{width:120px} .cl-tools{flex-wrap:nowrap;overflow-x:auto;max-width:100%} .cl-tools > *{flex:none} .cl-row{flex-wrap:wrap} }
 @media (max-width:860px){ .cat-btn{border-radius:0;border-color:var(--ink)} .cat-btn[aria-current="true"]{box-shadow:none;border-color:var(--madder)} }
 </style>
 </head>
 <body>
 
-<header class="hero">
-<canvas class="stage" id="stage" aria-hidden="true"></canvas>
-<div class="wrap hero-in">
-  <div class="hero-top"><p class="eyebrow">Lietuvių tradiciniai rankdarbiai</p>
-  <h1>Raštų<br>skrynia</h1></div>
-  <div class="hero-bottom"><div class="hero-row">
-    <p class="lede" id="lede"></p>
-    <div class="mast-side">
-    <div class="viewswitch" role="group" aria-label="Vaizdas"><button type="button" data-mode="catalog" aria-pressed="true">Katalogas</button><button type="button" data-mode="collage" aria-pressed="false">Koliažas</button></div>
-    <button class="btn primary" id="uploadBtn" type="button" hidden><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 11V2M4.5 5.5L8 2l3.5 3.5M2 11v3h12v-3"/></svg>Įkelti savo darbą</button>
-    <button class="btn" id="shuffle" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 4h3c3 0 5 8 8 8h3M1 12h3c1.3 0 2.3-1.4 3.2-3M10 5.2C10.6 4.5 11.2 4 12 4h3M13 2l2 2-2 2M13 10l2 2-2 2"/></svg>Sumaišyti</button>
-    <button class="btn" id="savedToggle" type="button" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h8v13L8 11l-4 3.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Išsaugoti <span class="n" id="savedN">0</span></button>
-  </div>
-  </div>
-  <nav class="herolinks" aria-label="Puslapio skiltys"><a href="#rodykle">Rinkiniai</a><a href="#kaip" id="navHow">Kaip pasidaryti</a><a href="#apie">Apie projektą</a></nav></div>
-</div>
-</header>
-
-<div class="wrap layout" id="rodykle">
-  <nav class="index" aria-label="Rankdarbių rūšys">
-    <p class="label">Rodyklė</p>
-    <ul id="cats"></ul>
-  </nav>
-  <main>
-    <div class="filters">
-      <div class="row">
-        <label class="search"><span class="vh">Ieškoti</span>
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>
-          <input id="q" type="search" placeholder="Ieškoti: tulpės, rombai, vilna, linas, Rokiškis…" autocomplete="off">
-        </label>
+<main id="collage" class="collage" aria-label="Raštų skrynia">
+  <div class="cl-menu" id="clMenu">
+    <div class="cl-row">
+      <button class="cl-brand" id="clBrand" type="button">Raštų skrynia</button>
+      <div class="cl-tools">
+        <label class="vh" for="clQ">Ieškoti</label><input id="clQ" type="search" placeholder="Ieškoti…" autocomplete="off">
+        <label class="vh" for="clFam">Spalva</label><select id="clFam"></select>
+        <label class="vh" for="clReg">Regionas</label><select id="clReg"></select>
+        <button class="btn" id="clShuffle" type="button">Sumaišyti</button>
+        <button class="btn" id="howBtn" type="button">Kaip pasidaryti</button>
+        <button class="btn" id="savedToggle" type="button" aria-pressed="false">Išsaugoti <span class="n" id="savedN">0</span></button>
+        <button class="btn primary" id="uploadBtn" type="button" hidden>Įkelti savo darbą</button>
       </div>
-      <div class="group" role="group" aria-label="Spalva"><span class="label">Spalva</span><span id="fams" class="group"></span>
-        <label class="picker" title="Pasirinkti tikslų atspalvį"><span class="vh">Pasirinkti tikslų atspalvį</span><input type="color" id="hex" value="#a2262e"></label>
-        <span id="hexChip"></span>
-      </div>
-      <div class="group" role="group" aria-label="Regionas"><span class="label">Regionas</span><span id="regs" class="group"></span></div>
-      <div class="group" role="group" aria-label="Technika" id="techRow" hidden><span class="label">Technika</span><span id="techs" class="group"></span></div>
     </div>
-    <div class="sec-head">
-      <div><h2 id="secTitle"></h2><p id="secNote"></p></div>
-      <span class="count" id="count" aria-live="polite"></span>
-    </div>
-    <div id="howto"></div><span id="kaip"></span>
-    <div class="wall" id="wall"></div>
-    <div class="morebox"><button class="btn" id="more" type="button" hidden></button></div>
-    <div class="empty" id="empty" hidden><p id="emptyText"></p><button class="btn" id="clear" type="button">Išvalyti filtrus</button></div>
-  </main>
-</div>
-
-<section id="collage" class="collage" hidden aria-label="Koliažas">
-  <div class="cl-top"><h2>Raštų skrynia</h2><p id="clSub"></p><div class="viewswitch" role="group" aria-label="Vaizdas"><button type="button" data-mode="catalog" aria-pressed="true">Katalogas</button><button type="button" data-mode="collage" aria-pressed="false">Koliažas</button></div></div>
+    <nav class="cl-cats" id="clCats" aria-label="Rankdarbių rūšys"></nav>
+  </div>
+  <div class="cl-head wrap" id="clHead" hidden>
+    <div class="cl-head-row"><h2 id="clTitle"></h2><span class="count" id="clCount"></span><span id="clChip"></span><button class="btn" id="clScatter" type="button">Išmėtyti viską</button></div>
+    <div class="group" id="clTechs" role="group" aria-label="Technika" hidden></div>
+    <div id="clHow"></div>
+  </div>
   <div class="cl-area" id="clArea"></div>
   <div class="cl-end"><div class="empty" id="clEmpty" hidden><p>Nieko nerasta su šiais filtrais.</p><button class="btn" id="clClear" type="button">Išvalyti filtrus</button></div><button class="btn" id="clMore" type="button">Daugiau skiaučių</button></div>
-</section>
-<div class="cl-bar" id="clBar" hidden role="toolbar" aria-label="Koliažo valdymas">
-  <div class="viewswitch" role="group" aria-label="Vaizdas"><button type="button" data-mode="catalog" aria-pressed="true">Katalogas</button><button type="button" data-mode="collage" aria-pressed="false">Koliažas</button></div>
-  <button class="btn" id="clShuffle" type="button">Sumaišyti</button>
-  <label class="vh" for="clQ">Ieškoti</label><input id="clQ" type="search" placeholder="Ieškoti…" autocomplete="off">
-  <label class="vh" for="clCat">Rūšis</label><select id="clCat"></select>
-  <label class="vh" for="clFam">Spalva</label><select id="clFam"></select>
-  <label class="vh" for="clReg">Regionas</label><select id="clReg"></select>
-  <span class="count" id="clCount"></span>
-</div>
+</main>
 <footer id="apie">
   <div class="wrap">
     <div>
@@ -410,6 +407,13 @@ footer{border-top:1.5px solid var(--ink)}
   </div>
 </dialog>
 
+<dialog id="howDlg" aria-labelledby="howTitle">
+  <div class="up-body">
+    <div class="d-top"><h2 id="howTitle">Kaip pasidaryti</h2><button class="icon-btn" id="howClose" type="button" aria-label="Uždaryti"><svg viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
+    <p class="hint">Pamokos, vaizdo įrašai ir aprašai apie kiekvieną amatą. Pirmiausia nurodyti LNKC nematerialaus kultūros paveldo sąvado įrašai.</p>
+    <div id="howAll"></div>
+  </div>
+</dialog>
 <dialog id="up" aria-labelledby="upTitle">
   <form class="up-body" id="upForm" novalidate>
     <div class="d-top"><h2 id="upTitle">Įkelti savo darbą</h2>
@@ -500,19 +504,6 @@ try { saved = new Set(JSON.parse(localStorage.getItem(SAVE_KEY) || "[]")); } cat
 function persist(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify([...saved])); } catch (e) {} }
 
 const state = { mode: "catalog", cat: "all", all: false, q: "", fam: null, hex: null, reg: null, tech: null, saved: false, seed: 7 };
-const PAGE = 48, PICK_J = 6, PICK_O = 6;
-let shown = PAGE;
-const isHome = () => state.cat === "all" && !state.all && !state.saved && !state.q && !state.fam && !state.hex && !state.reg;
-// Front page pick: six juostos and six other crafts, each from a different category
-function featured(){
-  const j = [], o = [], cats = new Set();
-  for (const i of order){ const d = ALL[i]; if (d.via === "community") continue;
-    if (d.cat === "juostos"){ if (j.length < PICK_J) j.push(d); }
-    else if (o.length < PICK_O && !cats.has(d.cat)){ o.push(d); cats.add(d.cat); }
-    if (j.length >= PICK_J && o.length >= PICK_O) break; }
-  const out = []; for (let k = 0; k < Math.max(j.length, o.length); k++){ if (j[k]) out.push(j[k]); if (o[k]) out.push(o[k]); }
-  return out;
-}
 let view = [];
 let current = -1;
 
@@ -621,100 +612,10 @@ function weaveTile(motif, pal, cw, ch){
   x.fillStyle = g; x.fillRect(0, 0, W * 2, H);
   return { cv, W, H };
 }
-function bez(a, b, c, d, t){ const u = 1 - t; return [u*u*u*a[0] + 3*u*u*t*b[0] + 3*u*t*t*c[0] + t*t*t*d[0], u*u*u*a[1] + 3*u*u*t*b[1] + 3*u*t*t*c[1] + t*t*t*d[1]]; }
-// Points spaced evenly along the curve, each with its direction, so the sash texture keeps its proportions
-function sampleCurve(seg, step){
-  const pts = [];
-  for (let i = 0; i <= 400; i++) pts.push(bez(seg[0], seg[1], seg[2], seg[3], i / 400));
-  const out = []; let acc = 0, next = 0;
-  for (let i = 1; i < pts.length; i++){
-    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], d = Math.hypot(x1 - x0, y1 - y0);
-    while (d > 0 && next <= acc + d){
-      const t = (next - acc) / d, a = Math.atan2(y1 - y0, x1 - x0);
-      out.push({ x: x0 + (x1 - x0) * t, y: y0 + (y1 - y0) * t, c: Math.cos(a), s: Math.sin(a), len: next });
-      next += step;
-    }
-    acc += d;
-  }
-  return { out, pts };
-}
 const lum = ([r, g, b]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const stage = $("stage"), sctx = stage.getContext("2d");
-// The three narrow sashes of variant 2h: same wave, stacked, each flowing at its own speed
-const BASE = [[-120, 560], [200, 400], [400, 760], [780, 520]];
-const RIB_DEF = [{ m: MA, p: "classic", speed: 18 }, { m: MD, p: "navy", speed: 26 }, { m: MC, p: "green", speed: 34 }];
-const STEP = 3;
-let rib = [], shadowCv = null, sDpr = 1, rafId = 0, lastT = 0, stageVisible = true;
-function layoutStage(){
-  const W = Math.max(1, stage.clientWidth), H = Math.max(1, stage.clientHeight);
-  sDpr = Math.min(window.devicePixelRatio || 1, 2);
-  stage.width = Math.round(W * sDpr); stage.height = Math.round(H * sDpr);
-  const cell = W < 640 ? 1.5 : 2;
-  const cw = Math.max(1, Math.round(cell * sDpr)), ch = Math.max(1, Math.round(cell * 1.3 * sDpr));
-  const tiles = RIB_DEF.map(r => weaveTile(r.m, PALS[r.p], cw, ch));
-  const rw = Math.max(...tiles.map(t => t.H)) / sDpr;
-  const gapY = rw + Math.max(6, rw * .15);
-  const sx = W / 640;
-  const raw = BASE.map(([x, y]) => [x * sx, y - 560]);
-  const probe = sampleCurve(raw, 8).pts;
-  const minY = Math.min(...probe.map(p => p[1])), maxY = Math.max(...probe.map(p => p[1]));
-  const margin = 10, room = Math.min(H * .5, H - 2 * margin) - rw - 2 * gapY;
-  const amp = Math.max(.2, Math.min(1.1, room / Math.max(1, maxY - minY)));
-  const blockH = (maxY - minY) * amp + rw + 2 * gapY;
-  // centre the sashes on the title so they read as its background
-  const h1 = document.querySelector(".hero h1"), sr = stage.getBoundingClientRect();
-  const cy = h1 ? h1.getBoundingClientRect().top - sr.top + h1.offsetHeight * .62 : H * .45;
-  const blockTop = Math.min(Math.max(margin, cy - blockH / 2), Math.max(margin, H - blockH - margin));
-  const top = blockTop + rw / 2 - minY * amp;
-  const prev = rib;
-  rib = tiles.map((t, k) => {
-    const seg = raw.map(([x, y]) => [x, top + y * amp + k * gapY]);
-    const smp = sampleCurve(seg, STEP);
-    return { t, hw: t.H / sDpr / 2, speed: RIB_DEF[k].speed, o: prev[k] ? prev[k].o : 0, out: smp.out, pts: smp.pts };
-  });
-  // Soft shadow under the sashes, drawn once per layout (the path sits far off-canvas, only its shadow lands)
-  shadowCv = document.createElement("canvas"); shadowCv.width = stage.width; shadowCv.height = stage.height;
-  const sh = shadowCv.getContext("2d");
-  sh.setTransform(sDpr, 0, 0, sDpr, 0, 0);
-  sh.lineWidth = rw * .9; sh.strokeStyle = "#000";
-  sh.shadowColor = "rgba(28,25,21,.24)"; sh.shadowBlur = 14 * sDpr; sh.shadowOffsetX = 0; sh.shadowOffsetY = (10000 + 12) * sDpr;
-  rib.forEach(r => { sh.beginPath(); r.pts.forEach((p, i) => i ? sh.lineTo(p[0], p[1] - 10000) : sh.moveTo(p[0], p[1] - 10000)); sh.stroke(); });
-  drawStage();
-}
-function drawStage(){
-  const ctx = sctx;
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, stage.width, stage.height);
-  if (shadowCv) ctx.drawImage(shadowCv, 0, 0);
-  ctx.imageSmoothingEnabled = false;
-  const sw = STEP + 1.2;
-  for (const r of rib){
-    const Wt = r.t.W;
-    for (const p of r.out){
-      let u = ((p.len - r.o) * sDpr) % Wt; if (u < 0) u += Wt;
-      ctx.setTransform(sDpr * p.c, sDpr * p.s, -sDpr * p.s, sDpr * p.c, sDpr * p.x, sDpr * p.y);
-      ctx.drawImage(r.t.cv, u, 0, sw * sDpr, r.t.H, 0, -r.hw, sw, r.hw * 2);
-    }
-  }
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-}
-function tick(t){
-  const dt = Math.min(64, t - lastT); lastT = t;
-  for (const r of rib) r.o += dt * r.speed / 1000;
-  drawStage();
-  rafId = requestAnimationFrame(tick);
-}
-function play(){ if (reduceMotion || rafId || !stageVisible || document.hidden) return; lastT = performance.now(); rafId = requestAnimationFrame(tick); }
-function pause(){ if (rafId) cancelAnimationFrame(rafId); rafId = 0; }
-function startRibbons(){
-  layoutStage();
-  if ("IntersectionObserver" in window) new IntersectionObserver(es => { stageVisible = es[0].isIntersecting; stageVisible ? play() : pause(); }).observe(stage);
-  document.addEventListener("visibilitychange", () => document.hidden ? pause() : play());
-  play();
-}
-// A small sash in an object's own colours, for the detail view
+// A small sash in an object's own colours, for the detail view and the collage
 function weavePalette(pal){
   const cs = (pal && pal.length ? pal : [CGR, CR]).map(h => ({ h, rgb: hexRgb(h) }));
   const ground = cs.reduce((a, b) => lum(b.rgb) > lum(a.rgb) ? b : a);
@@ -749,109 +650,16 @@ function matches(d, skip){
   if (state.q){ for (const w of norm(state.q).split(/\s+/).filter(Boolean)) if (!d.hay.includes(w)) return false; }
   return true;
 }
-function renderIndex(){
-  const counts = {}; ALL.forEach(d => { counts[d.cat] = (counts[d.cat] || 0) + 1; if (d.via === "community") counts.community = (counts.community || 0) + 1; });
-  const row = (k, n, c, cls) => `<li><button class="cat-btn${cls ? " " + cls : ""}" type="button" data-cat="${k}" aria-current="${state.cat === k}">${esc(n)}<span class="n">${c}</span></button></li>`;
-  const homeBtn = `<li><button class="cat-btn" type="button" data-cat="home" aria-current="${isHome()}">Pradžia<span class="n">${PICK_J + PICK_O}</span></button></li>`;
-  let html = homeBtn + row("all", "Visi rankdarbiai", ALL.length).replace(`aria-current="${state.cat === "all"}"`, `aria-current="${state.cat === "all" && !isHome()}"`);
-  if (commReady) html += row("community", COMM.n, counts.community || 0, "comm");
-  html += '<li class="sep" aria-hidden="true"></li>' + CATS.map(c => row(c.k, c.n, counts[c.k] || 0)).join("");
-  $("cats").innerHTML = html;
-}
-function renderFams(){
-  $("fams").innerHTML = FAMS.map(f => `<button class="sw" type="button" data-fam="${f.k}" style="background:${f.c}" aria-pressed="${state.fam === f.k}" aria-label="${f.n}" title="${f.n}"></button>`).join("");
-  $("hexChip").innerHTML = state.hex ? `<span class="hexchip"><i style="background:${state.hex}"></i>Artimiausi ${state.hex.toUpperCase()}<button type="button" id="hexClear" aria-label="Nuimti atspalvio filtrą">${ICON_X}</button></span>` : "";
-}
-function renderRegs(){
-  const pool = ALL.filter(d => matches(d, "reg"));
-  $("regs").innerHTML = REGS.map(r => { const n = pool.filter(d => d.reg === r).length; return `<button class="pill" type="button" data-reg="${r}" aria-pressed="${state.reg === r}"${n || state.reg === r ? "" : " disabled"}>${r}<span class="n">${n}</span></button>`; }).join("");
-}
-function renderTechs(){
-  const show = state.cat === "juostos";
-  $("techRow").hidden = !show;
-  if (!show) return;
-  const pool = ALL.filter(d => matches(d, "tech"));
-  $("techs").innerHTML = TECHS.map(t => { const n = pool.filter(d => d.tech === t).length; return `<button class="pill" type="button" data-tech="${t}" aria-pressed="${state.tech === t}">${t}<span class="n">${n}</span></button>`; }).join("");
-}
 function tutList(k){ return (TUT && Array.isArray(TUT[k])) ? TUT[k] : []; }
 function tutItem(t){
   return `<li><a href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.title)}</a><span class="meta"><span class="tag">${esc(t.type || "")}</span>${esc(t.source || "")}${t.lang === "en" ? " · anglų k." : ""}${t.note ? " · " + esc(t.note) : ""}</span></li>`;
 }
-function renderHowto(){
-  const box = $("howto");
-  if (state.saved || state.cat === "community"){ box.innerHTML = ""; return; }
-  if (state.cat === "all"){
-    const groups = CATS.filter(c => tutList(c.k).length);
-    const n = groups.reduce((s, c) => s + tutList(c.k).length, 0);
-    box.innerHTML = n ? `<details class="howto"><summary>Kaip pasidaryti: pamokos ir šaltiniai<span class="n">${n}</span></summary><ul>${groups.map(c => `<li><h3>${esc(c.n)}</h3><ul>${tutList(c.k).map(tutItem).join("")}</ul></li>`).join("")}</ul></details>` : "";
-    return;
-  }
-  const list = tutList(state.cat);
-  box.innerHTML = list.length ? `<details class="howto" open><summary>Kaip pasidaryti<span class="n">${list.length}</span></summary><ul>${list.map(tutItem).join("")}</ul></details>` : "";
-}
-function card(d, i){
-  const c = CAT[d.cat] || COMM;
-  const weft = d.pal.map(h => `<i style="background:${h}"></i>`).join("");
-  const isSaved = saved.has(d.id);
-  const sub = d.via === "community" ? "Bendruomenė · " + c.n : (d.tech ? d.tech + " juosta" : c.n) + (d.reg ? " · " + d.reg : "");
-  const w = Math.max(1, +d.w || 1), h = Math.max(1, +d.h || 1);
-  return `<article class="card"><button class="card-btn" type="button" data-i="${i}">` +
-    `<span class="frame" style="aspect-ratio:${w}/${h};--ph:${d.pal[0] || "#cccccc"}"><img data-id="${esc(d.id)}" alt="" decoding="async"></span>` +
-    (d.via === "community" ? '<span class="badge">Bendruomenė</span>' : "") +
-    `<span class="weft" aria-hidden="true">${weft}</span>` +
-    `<span class="card-title">${esc(d.title)}</span>` +
-    `<span class="card-sub">${esc(sub)}</span></button>` +
-    `<button class="save-btn" type="button" data-save="${esc(d.id)}" aria-pressed="${isSaved}" aria-label="${isSaved ? "Pašalinti iš išsaugotų" : "Išsaugoti"}: ${esc(d.title)}">${ICON_SAVE}</button></article>`;
-}
 function observeImgs(root){ root.querySelectorAll("img[data-id]:not([src])").forEach(img => io ? io.observe(img) : fill(img)); }
-function renderMore(){
-  const btn = $("more"), home = isHome();
-  if (home){ btn.hidden = false; btn.textContent = "Rodyti visus " + ALL.length + " rankdarbius"; return; }
-  const left = view.length - shown;
-  btn.hidden = left <= 0;
-  if (left > 0) btn.textContent = "Rodyti daugiau (" + Math.min(PAGE, left) + ")";
-}
-function render(){
-  if (state.mode === "collage"){ renderCollage(); return; }
-  const home = isHome();
-  view = home ? featured() : order.map(i => ALL[i]).filter(d => matches(d));
-  if (hexTarget) view.sort((a, b) => hexScore(a) - hexScore(b));
-  const c = CAT[state.cat];
-  $("secTitle").textContent = home ? "Šiandien iš skrynios" : state.saved ? "Išsaugoti" : (c ? c.n : "Visi rankdarbiai");
-  $("secNote").textContent = home ? "Dvylika atsitiktinai atrinktų darbų. Spauskite „Sumaišyti“, kad pamatytumėte kitus, arba rinkitės rūšį rodyklėje." : state.saved ? "Objektai, kuriuos pažymėjote šioje naršyklėje." : (c ? c.note : "Juostos, margučiai, šiaudinukai, karpiniai, kryžiai, kaukės ir kiti raštai.");
-  $("count").textContent = home ? view.length + " iš " + ALL.length : (hexTarget ? "Pagal atspalvį: " : "") + (view.length > shown ? "Rodoma " + shown + " iš " + view.length : objektai(view.length));
-  const wall = $("wall");
-  if (io) io.disconnect();
-  wall.innerHTML = view.slice(0, home ? view.length : shown).map(card).join("");
-  observeImgs(wall);
-  renderMore();
-  const none = view.length === 0;
-  $("empty").hidden = !none;
-  if (none){
-    if (state.saved && saved.size === 0) $("emptyText").textContent = "Dar nieko neišsaugojote. Atidarykite objektą ir spauskite „Išsaugoti“.";
-    else if (state.cat === "community" && !ALL.some(d => d.via === "community")) $("emptyText").textContent = canUpload ? "Bendruomenės darbų dar nėra. Būkite pirmi: spauskite „Įkelti savo darbą“." : "Bendruomenės darbų dar nėra.";
-    else $("emptyText").textContent = "Nieko nerasta. Pabandykite kitą žodį, spalvą ar regioną arba išvalykite filtrus.";
-  }
-  $("savedN").textContent = saved.size;
-  $("savedToggle").setAttribute("aria-pressed", state.saved);
-  renderIndex(); renderFams(); renderRegs(); renderTechs(); renderHowto();
-}
-function setCat(k){
-  shown = PAGE;
-  if (k === "home"){ state.cat = "all"; state.all = false; state.q = ""; $("q").value = ""; state.fam = null; state.hex = null; hexTarget = null; state.reg = null; }
-  else if (k === "all") state.all = true;
-  if (k !== "home") state.cat = k;
-  state.tech = null; state.saved = false;
-  const c = CAT[k];
-  try { history.replaceState(null, "", !c || k === "all" || k === "home" ? location.pathname + location.search : "#" + c.s); } catch (e) {}
-  render();
-}
+function render(){ renderCollage(); }
 function setHex(h){
-  shown = PAGE;
   state.hex = h && HEX.test(h) ? h.toLowerCase() : null;
   hexTarget = state.hex ? hexRgb(state.hex) : null;
   if (state.hex) state.fam = null;
-  render();
 }
 
 /* ---------- Detail ---------- */
@@ -1076,7 +884,7 @@ $("upForm").addEventListener("submit", async e => {
     items.push(entry);
     await ref.set({ items });
     $("up").close(); toast("Darbas įkeltas. Ačiū!");
-    setCat("community");
+    pickInMenu(() => { state.cat = "community"; state.saved = false; });
   } catch (err) {
     const code = err && err.code;
     upStatus(UP_ERR[code] || "Įkelti nepavyko. Bandykite dar kartą.", true);
@@ -1101,28 +909,6 @@ $("dDel").addEventListener("click", async () => {
 });
 
 /* ---------- Events ---------- */
-$("cats").addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (b) setCat(b.dataset.cat); });
-$("fams").addEventListener("click", e => { const b = e.target.closest("[data-fam]"); if (!b) return; shown = PAGE; state.fam = state.fam === b.dataset.fam ? null : b.dataset.fam; if (state.fam){ state.hex = null; hexTarget = null; } render(); });
-$("hexChip").addEventListener("click", e => { if (e.target.closest("#hexClear")) setHex(null); });
-let hexT; $("hex").addEventListener("input", e => { clearTimeout(hexT); hexT = setTimeout(() => setHex(e.target.value), 120); });
-$("regs").addEventListener("click", e => { const b = e.target.closest("[data-reg]"); if (!b || b.disabled) return; shown = PAGE; state.reg = state.reg === b.dataset.reg ? null : b.dataset.reg; render(); });
-$("techs").addEventListener("click", e => { const b = e.target.closest("[data-tech]"); if (!b) return; shown = PAGE; state.tech = state.tech === b.dataset.tech ? null : b.dataset.tech; render(); });
-let qTimer; $("q").addEventListener("input", e => { clearTimeout(qTimer); qTimer = setTimeout(() => { state.q = e.target.value.trim(); shown = PAGE; render(); }, 160); });
-$("more").addEventListener("click", () => {
-  if (isHome()){ setCat("all"); $("secTitle").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }); return; }
-  const from = shown; shown += PAGE;
-  const wall = $("wall"); wall.insertAdjacentHTML("beforeend", view.slice(from, shown).map((d, k) => card(d, from + k)).join(""));
-  observeImgs(wall); renderMore();
-  $("count").textContent = (hexTarget ? "Pagal atspalvį: " : "") + (view.length > shown ? "Rodoma " + shown + " iš " + view.length : objektai(view.length));
-});
-$("shuffle").addEventListener("click", () => { state.seed = Math.floor(Math.random() * 1e9); reshuffle(); render(); });
-$("savedToggle").addEventListener("click", () => { state.saved = !state.saved; shown = PAGE; render(); });
-$("clear").addEventListener("click", () => { state.q = ""; $("q").value = ""; state.fam = null; state.hex = null; hexTarget = null; state.reg = null; state.tech = null; state.saved = false; render(); });
-$("wall").addEventListener("click", e => {
-  const s = e.target.closest("[data-save]");
-  if (s){ toggleSave(s.dataset.save); s.setAttribute("aria-label", saved.has(s.dataset.save) ? "Pašalinti iš išsaugotų" : "Išsaugoti"); if (state.saved) render(); return; }
-  const b = e.target.closest("[data-i]"); if (b) openDetail(+b.dataset.i);
-});
 $("dClose").addEventListener("click", () => dlg.close());
 dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
 $("up").addEventListener("click", e => { if (e.target === $("up")) $("up").close(); });
@@ -1133,7 +919,7 @@ $("dSave").addEventListener("click", () => { const d = view[current]; if (!d) re
 $("dMore").addEventListener("click", () => { $("dDesc").classList.remove("more"); $("dMore").hidden = true; });
 $("dSw").addEventListener("click", e => {
   const f = e.target.closest("[data-find]");
-  if (f){ dlg.close(); state.cat = "all"; state.saved = false; state.reg = null; state.tech = null; $("hex").value = f.dataset.find; setHex(f.dataset.find); $("wall").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }); return; }
+  if (f){ dlg.close(); pickInMenu(() => { state.cat = "all"; state.saved = false; state.reg = null; state.tech = null; state.q = ""; setHex(f.dataset.find); }); return; }
   const b = e.target.closest("[data-hex]"); if (!b) return;
   const label = b.querySelector("span"), hex = b.dataset.hex.toUpperCase();
   const done = ok => { label.textContent = ok ? "Nukopijuota" : hex; setTimeout(() => label.textContent = hex, 1200); };
@@ -1145,25 +931,21 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft" && current > 0) openDetail(current - 1);
   if (e.key === "ArrowRight" && current < view.length - 1) openDetail(current + 1);
 });
-let rT, lastW = 0; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(() => { if (document.documentElement.clientWidth !== lastW){ lastW = document.documentElement.clientWidth; if (state.mode === "collage") renderCollage(); else layoutStage(); } if (dlg.open && view[current]) drawDetailWeave($("dBand"), view[current].pal); }, 150); });
-$("navHow").addEventListener("click", e => {
-  e.preventDefault();
-  if (state.saved || state.cat === "community"){ state.saved = false; setCat("all"); }
-  const d = document.querySelector("#howto details"); if (d) d.open = true;
-  $("howto").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-});
+let rT, lastW = 0; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(() => { if (document.documentElement.clientWidth !== lastW){ lastW = document.documentElement.clientWidth; renderCollage(); } if (dlg.open && view[current]) drawDetailWeave($("dBand"), view[current].pal); }, 150); });
 
-/* ---------- Collage view: scraps from the chest ---------- */
+/* ---------- Collage view: scattered scraps, tidied when something is picked ---------- */
 const CAT_TONE = { juostos: "--madder", sodai: "--ochre", "margučiai": "--rose", verbos: "--birch", karpiniai: "--ink", "rūpintojėliai": "--amber", "kryžiai": "--indigo", "lovatiesės": "--plum", "rankšluosčiai": "--birch", "pirštinės": "--madder", "drabužiai": "--indigo", "prieverpstės": "--amber", skrynios: "--plum", "kaukės": "--ink" };
-const COLLAGE_STEP = 60;
-let collageLimit = 90, scrapList = [], zTop = 3000;
-const clArea = $("clArea");
+const COLLAGE_STEP = 60, TIDY_STEP = 60;
+let collageLimit = 90, tidyLimit = 60, scrapList = [], zTop = 3000;
+const clArea = $("clArea"), clMenu = $("clMenu");
+const isFiltered = () => state.cat !== "all" || !!state.fam || !!state.reg || !!state.q || !!state.hex || state.saved || !!state.tech;
+const RESET = () => { state.cat = "all"; state.fam = null; state.reg = null; state.q = ""; state.hex = null; hexTarget = null; state.saved = false; state.tech = null; };
 function shortText(t, n){ t = String(t || "").replace(/\s+/g, " ").trim(); return t.length > n ? t.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : t; }
 function firstSentence(t){ const m = String(t || "").match(/^.*?[.!?](\s|$)/); return shortText(m ? m[0] : t, 80); }
 // Text scraps only quote what the record itself says
 function scrapText(d, r){
   const opts = [["label", shortText(d.title, 38)], ["pill", (CAT[d.cat] || COMM).n]];
-  if (d.desc && d.desc.length > 30) if (r() < .55) opts.push(["quote", firstSentence(d.desc)]);
+  if (d.desc && d.desc.length > 30 && r() < .55) opts.push(["quote", firstSentence(d.desc)]);
   if (d.pal && d.pal[0]) opts.push(["hex", d.pal[0]]);
   if (d.mat && d.mat.length) opts.push(["mat", shortText(d.mat[0], 30)]);
   if (d.place) opts.push(["big", shortText(d.place.split(",")[0], 22)]);
@@ -1213,16 +995,19 @@ function placeScraps(scraps){
   scraps.forEach(s => { s.dx = +((r() - .5) * 12).toFixed(1); s.dy = +((r() - .5) * 12).toFixed(1); s.dur = +(5 + r() * 7).toFixed(1); s.delay = -(r() * 8).toFixed(1); });
   clArea.style.height = Math.round(rows * ch + ch * 2.4) + "px";
 }
+function imgInner(d){
+  return `<span class="sc-img" style="aspect-ratio:${Math.max(1, +d.w || 1)}/${Math.max(1, +d.h || 1)};--ph:${d.pal[0] || "#cccccc"}"><img data-id="${esc(d.id)}" alt="" decoding="async" draggable="false"></span><span class="sc-cap">${esc(d.title)}</span>`;
+}
 function scrapHTML(s, k){
   const d = s.d;
   const st = `left:${s.x}px;top:${s.y}px;${s.kind === "img" || s.kind === "sash" ? `width:${s.w}px;` : ""}z-index:${s.z};--rot:${s.rot}deg;--dx:${s.dx}px;--dy:${s.dy}px;--dur:${s.dur}s;--delay:${s.delay}s`;
   let inner;
-  if (s.kind === "img") inner = `<span class="sc-img" style="aspect-ratio:${Math.max(1, +d.w || 1)}/${Math.max(1, +d.h || 1)};--ph:${d.pal[0] || "#cccccc"}"><img data-id="${esc(d.id)}" alt="" decoding="async" draggable="false"></span>`;
+  if (s.kind === "img") inner = imgInner(d);
   else if (s.kind === "sash") inner = `<canvas class="sc-sash" data-sash="${k}"></canvas>`;
   else if (s.kind === "hex") inner = `<span class="sc-t sc-hex"><i style="background:${HEX.test(s.text) ? s.text : "#cccccc"}"></i>${esc(s.text.toUpperCase())}</span>`;
   else if (s.kind === "pill") inner = `<span class="sc-t sc-pill" style="background:var(${CAT_TONE[d.cat] || "--ink"})">${esc(s.text)}</span>`;
   else inner = `<span class="sc-t sc-${s.kind}">${esc(s.text)}</span>`;
-  return `<button class="scrap scrap-${s.kind}" type="button" data-i="${s.i}" style="${st}" aria-label="${esc(d.title)}">${inner}</button>`;
+  return `<button class="scrap scrap-${s.kind}" type="button" data-i="${s.i}" data-id="${esc(d.id)}" style="${st}" aria-label="${esc(d.title)}">${inner}</button>`;
 }
 function drawSashScraps(){
   clArea.querySelectorAll("canvas[data-sash]").forEach(cv => {
@@ -1235,51 +1020,119 @@ function drawSashScraps(){
     for (let x = 0; x < cv.width; x += t.W) ctx.drawImage(t.cv, 0, 0, t.W, t.H, x, 0, t.W, t.H);
   });
 }
-function syncBar(){
-  $("clQ").value = state.q;
-  $("clCat").value = state.cat === "all" ? "" : state.cat;
-  $("clFam").value = state.fam || "";
-  $("clReg").value = state.reg || "";
-}
-function renderCollage(){
-  const all = order.map(i => ALL[i]).filter(d => matches(d));
-  const items = all.slice(0, collageLimit);
-  view = items;
+// Scattered: a fresh random collage
+function scatter(items){
+  clArea.classList.remove("is-tidy");
   scrapList = buildScraps(items);
   placeScraps(scrapList);
   if (io) io.disconnect();
   clArea.innerHTML = scrapList.map(scrapHTML).join("");
   observeImgs(clArea);
   drawSashScraps();
-  $("clCount").textContent = items.length + " iš " + all.length;
+}
+// Tidy: the picked pieces fly into a neat grid, everything else falls away
+function tidyPositions(items){
+  const W = Math.max(320, clArea.clientWidth);
+  const gap = W < 600 ? 12 : 20, target = W < 600 ? 150 : 210;
+  const cols = Math.max(2, Math.floor((W - gap) / (target + gap)));
+  const colW = (W - gap * (cols + 1)) / cols, capH = 28;
+  const hs = new Array(cols).fill(gap), pos = new Map();
+  items.forEach(d => {
+    let c = 0; for (let k = 1; k < cols; k++) if (hs[k] < hs[c]) c = k;
+    const ar = Math.max(.25, Math.min(4, (+d.h || 1) / (+d.w || 1)));
+    pos.set(d.id, { x: Math.round(gap + c * (colW + gap)), y: Math.round(hs[c]), w: Math.round(colW) });
+    hs[c] += colW * ar + capH + gap;
+  });
+  clArea.style.height = Math.round(Math.max(...hs) + gap) + "px";
+  return pos;
+}
+function tidyUp(items){
+  const pos = tidyPositions(items);
+  const idx = new Map(items.map((d, i) => [d.id, i]));
+  const live = new Map();
+  clArea.querySelectorAll(".scrap").forEach(el => {
+    if (el.classList.contains("gone")) return;
+    const id = el.dataset.id;
+    if (el.classList.contains("scrap-img") && pos.has(id) && !live.has(id)) live.set(id, el);
+    else { el.classList.add("gone"); setTimeout(() => el.remove(), 700); }
+  });
+  const vw = clArea.clientWidth, top = window.scrollY, vh = window.innerHeight;
+  const fresh = [];
+  items.forEach(d => {
+    let el = live.get(d.id);
+    if (!el){
+      const tmp = document.createElement("div");
+      tmp.innerHTML = `<button class="scrap scrap-img enter" type="button" data-id="${esc(d.id)}" style="left:${Math.round(Math.random() * (vw - 160))}px;top:${Math.round(top + Math.random() * vh * .8)}px;width:${120 + Math.round(Math.random() * 80)}px;z-index:${1 + Math.floor(Math.random() * 60)};--rot:${((Math.random() - .5) * 6).toFixed(2)}deg" aria-label="${esc(d.title)}">${imgInner(d)}</button>`;
+      el = tmp.firstChild; clArea.appendChild(el); fresh.push(el);
+    }
+    el.dataset.i = idx.get(d.id);
+    el._to = pos.get(d.id);
+  });
+  observeImgs(clArea);
+  // commit the start positions, then set the targets so the browser animates between them
+  void clArea.offsetWidth;
+  clArea.classList.add("is-tidy");
+  items.forEach(d => {
+    const el = live.get(d.id) || clArea.querySelector(`.scrap-img[data-id="${CSS.escape(d.id)}"]:not(.gone)`);
+    if (!el || !el._to) return;
+    el.classList.remove("enter");
+    el.style.left = el._to.x + "px"; el.style.top = el._to.y + "px"; el.style.width = el._to.w + "px"; el.style.zIndex = 10;
+  });
+}
+function renderMenu(){
+  const counts = {}; ALL.forEach(d => { counts[d.cat] = (counts[d.cat] || 0) + 1; });
+  const b = (k, n, c) => `<button type="button" data-ccat="${k}" aria-pressed="${state.cat === k}">${esc(n)}<span class="n">${c}</span></button>`;
+  let html = b("all", "Visi", ALL.length);
+  if (commReady) html += b("community", COMM.n, ALL.filter(d => d.via === "community").length);
+  html += CATS.map(c => b(c.k, c.n, counts[c.k] || 0)).join("");
+  $("clCats").innerHTML = html;
+  document.documentElement.style.setProperty("--clmenu", clMenu.offsetHeight + "px");
+}
+function syncBar(){
+  if (document.activeElement !== $("clQ")) $("clQ").value = state.q;
+  $("clFam").value = state.fam || "";
+  $("clReg").value = state.reg || "";
+}
+function renderCollage(){
+  const all = order.map(i => ALL[i]).filter(d => matches(d));
+  const tidy = isFiltered();
+  const items = all.slice(0, tidy ? tidyLimit : collageLimit);
+  view = items;
+  if (tidy && !reduceMotion) tidyUp(items);
+  else if (tidy){ scatter(items); tidyUp(items); }
+  else scatter(items);
+  const c = CAT[state.cat];
+  $("clHead").hidden = !tidy;
+  $("clTitle").textContent = state.saved ? "Išsaugoti" : c && state.cat !== "all" ? c.n : state.hex ? "Panašios spalvos" : state.q ? "„" + state.q + "“" : state.reg ? state.reg : state.fam ? (FAMS.find(f => f.k === state.fam) || {}).n || "Atrinkta" : "Atrinkta";
+  $("clChip").innerHTML = state.hex ? `<span class="hexchip"><i style="background:${state.hex}"></i>${state.hex.toUpperCase()}<button type="button" id="hexClear" aria-label="Nuimti atspalvio filtrą">${ICON_X}</button></span>` : "";
+  const techPool = state.cat === "juostos" ? ALL.filter(d => matches(d, "tech")) : [];
+  $("clTechs").hidden = state.cat !== "juostos";
+  $("clTechs").innerHTML = state.cat === "juostos" ? '<span class="label">Technika</span>' + TECHS.map(t => { const n = techPool.filter(d => d.tech === t).length; return `<button class="pill" type="button" data-tech="${t}" aria-pressed="${state.tech === t}"${n ? "" : " disabled"}>${t}<span class="n">${n}</span></button>`; }).join("") : "";
+  const tl = state.cat !== "all" && !state.saved ? tutList(state.cat) : [];
+  $("clHow").innerHTML = tl.length ? `<details class="howto"><summary>Kaip pasidaryti<span class="n">${tl.length}</span></summary><ul>${tl.map(tutItem).join("")}</ul></details>` : "";
+  $("savedN").textContent = saved.size;
+  $("savedToggle").setAttribute("aria-pressed", state.saved);
+  $("clCount").textContent = items.length < all.length ? `Rodoma ${items.length} iš ${all.length}` : objektai(all.length);
   $("clMore").hidden = all.length <= items.length;
+  $("clMore").textContent = tidy ? "Rodyti daugiau" : "Daugiau skiaučių";
   $("clEmpty").hidden = items.length > 0;
-  $("clSub").textContent = `Skiautės iš ${ALL.length} rankdarbių. Tempkite, maišykite, spauskite, kad atvertumėte.`;
-  syncBar();
-  document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === state.mode));
+  $("clEmpty").querySelector("p").textContent = state.saved && saved.size === 0 ? "Dar nieko neišsaugojote. Atverkite skiautę ir spauskite „Išsaugoti“." : state.cat === "community" ? (canUpload ? "Bendruomenės darbų dar nėra. Būkite pirmi: spauskite „Įkelti savo darbą“." : "Bendruomenės darbų dar nėra.") : "Nieko nerasta su šiais filtrais.";
+  renderMenu(); syncBar();
 }
 function fillBarSelects(){
-  $("clCat").innerHTML = '<option value="">Visos rūšys</option>' + CATS.map(c => `<option value="${c.k}">${esc(c.n)}</option>`).join("");
   $("clFam").innerHTML = '<option value="">Visos spalvos</option>' + FAMS.map(f => `<option value="${f.k}">${esc(f.n)}</option>`).join("");
   $("clReg").innerHTML = '<option value="">Visi regionai</option>' + REGS.map(r => `<option>${r}</option>`).join("");
 }
-function setMode(m){
-  state.mode = m === "collage" ? "collage" : "catalog";
-  const col = state.mode === "collage";
-  $("collage").hidden = !col; $("clBar").hidden = !col;
-  document.querySelector(".hero").hidden = col; $("rodykle").hidden = col;
-  if (col){ state.saved = false; state.tech = null; collageLimit = 90; }
-  try { history.replaceState(null, "", col ? "#koliazas" : location.pathname + location.search); } catch (e) {}
-  document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === state.mode));
-  if (!col){ $("q").value = state.q; play(); } else pause();
+function pickInMenu(apply){
+  apply(); tidyLimit = 60;
   render();
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
 }
-// Drag with a mouse or pen; a tap or click opens the object
+// Drag with a mouse or pen while scattered; a tap or click opens the object
 let drag = null, swallowClick = false;
 clArea.addEventListener("pointerdown", e => {
   const el = e.target.closest(".scrap");
-  if (!el || e.pointerType === "touch" || e.button !== 0) return;
+  if (!el || e.pointerType === "touch" || e.button !== 0 || clArea.classList.contains("is-tidy")) return;
   drag = { el, id: e.pointerId, sx: e.clientX, sy: e.clientY, x: parseFloat(el.style.left), y: parseFloat(el.style.top), moved: false };
 });
 window.addEventListener("pointermove", e => {
@@ -1296,33 +1149,48 @@ window.addEventListener("pointerup", () => {
   drag = null;
 });
 clArea.addEventListener("click", e => {
-  const el = e.target.closest(".scrap"); if (!el) return;
+  const el = e.target.closest(".scrap"); if (!el || el.classList.contains("gone")) return;
   if (swallowClick){ e.preventDefault(); return; }
-  el.style.zIndex = ++zTop;
+  if (!clArea.classList.contains("is-tidy")) el.style.zIndex = ++zTop;
   openDetail(+el.dataset.i);
 });
-document.addEventListener("click", e => { const b = e.target.closest("[data-mode]"); if (b) setMode(b.dataset.mode); });
-$("clShuffle").addEventListener("click", () => { state.seed = Math.floor(Math.random() * 1e9); reshuffle(); render(); });
-$("clMore").addEventListener("click", () => { const y = window.scrollY; collageLimit += COLLAGE_STEP; render(); window.scrollTo(0, y); });
-let clQT; $("clQ").addEventListener("input", e => { clearTimeout(clQT); clQT = setTimeout(() => { state.q = e.target.value.trim(); render(); }, 200); });
-$("clCat").addEventListener("change", e => { state.cat = e.target.value || "all"; state.all = true; render(); });
-$("clFam").addEventListener("change", e => { state.fam = e.target.value || null; state.hex = null; hexTarget = null; render(); });
-$("clReg").addEventListener("change", e => { state.reg = e.target.value || null; render(); });
-$("clClear").addEventListener("click", () => { state.q = ""; state.cat = "all"; state.fam = null; state.hex = null; hexTarget = null; state.reg = null; render(); });
+$("clCats").addEventListener("click", e => {
+  const b = e.target.closest("[data-ccat]"); if (!b) return;
+  const k = b.dataset.ccat;
+  pickInMenu(() => { if (k === "all") RESET(); else { state.cat = k; state.saved = false; state.tech = null; } });
+});
+$("clBrand").addEventListener("click", () => pickInMenu(() => { RESET(); state.seed = Math.floor(Math.random() * 1e9); reshuffle(); }));
+$("clShuffle").addEventListener("click", () => { state.seed = Math.floor(Math.random() * 1e9); reshuffle(); pickInMenu(() => { RESET(); }); });
+$("clScatter").addEventListener("click", () => pickInMenu(() => { RESET(); }));
+$("clMore").addEventListener("click", () => { const y = window.scrollY; if (isFiltered()) tidyLimit += TIDY_STEP; else collageLimit += COLLAGE_STEP; render(); window.scrollTo(0, y); });
+let clQT; $("clQ").addEventListener("input", e => { clearTimeout(clQT); clQT = setTimeout(() => { state.q = e.target.value.trim(); tidyLimit = 60; render(); }, 250); });
+$("clFam").addEventListener("change", e => pickInMenu(() => { state.fam = e.target.value || null; state.hex = null; hexTarget = null; }));
+$("clReg").addEventListener("change", e => pickInMenu(() => { state.reg = e.target.value || null; }));
+$("clClear").addEventListener("click", () => pickInMenu(() => { state.q = ""; state.cat = "all"; state.fam = null; state.hex = null; hexTarget = null; state.reg = null; }));
+window.addEventListener("resize", () => document.documentElement.style.setProperty("--clmenu", clMenu.offsetHeight + "px"));
+$("savedToggle").addEventListener("click", () => pickInMenu(() => { const on = !state.saved; RESET(); state.saved = on; }));
+$("clTechs").addEventListener("click", e => { const b = e.target.closest("[data-tech]"); if (!b || b.disabled) return; pickInMenu(() => { state.tech = state.tech === b.dataset.tech ? null : b.dataset.tech; }); });
+$("clChip").addEventListener("click", e => { if (e.target.closest("#hexClear")) pickInMenu(() => setHex(null)); });
+const howDlg = $("howDlg");
+$("howBtn").addEventListener("click", () => {
+  const groups = CATS.filter(c => tutList(c.k).length);
+  $("howAll").innerHTML = `<div class="howto"><ul>${groups.map(c => `<li><h3>${esc(c.n)}</h3><ul>${tutList(c.k).map(tutItem).join("")}</ul></li>`).join("")}</ul></div>`;
+  howDlg.showModal();
+});
+$("howClose").addEventListener("click", () => howDlg.close());
+howDlg.addEventListener("click", e => { if (e.target === howDlg) howDlg.close(); });
 
 /* ---------- Start ---------- */
 const museums = new Set(DATA.filter(d => d.via !== "commons").map(d => d.provider)).size;
-$("lede").textContent = `Daugiau nei ${Math.floor(DATA.length / 100) * 100} juostų, margučių, sodų ir kaukių vienoje skrynioje. Ieškokite pagal spalvą, regioną ar techniką ir rinkitės raštus savo darbams.`;
 $("about1").textContent = `Objektai ir aprašai paimti iš Europeana, kur juos paskelbė ${museums} Lietuvos muziejų ir bibliotekų, o dalis sodų nuotraukų iš Wikimedia Commons. Įtraukti tik įrašai, kurių licencija leidžia juos rodyti nekomerciškai: viešasis domenas, CC BY, CC BY-SA ir CC BY-NC variantai.`;
 fillSelects();
 fillBarSelects();
-const fromHash = location.hash.slice(1);
-const hashCat = CATS.find(c => c.s === fromHash);
+// a craft in the address opens straight into its tidy view, e.g. #juostos
+const hashCat = CATS.find(c => c.s === location.hash.slice(1));
 if (hashCat) state.cat = hashCat.k;
+state.seed = Math.floor(Math.random() * 1e9);
 reshuffle();
 render();
-startRibbons();
-if (location.hash === "#koliazas") setMode("collage");
 initCommunity().catch(() => {});
 </script>
 
