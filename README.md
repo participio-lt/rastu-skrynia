@@ -8,8 +8,8 @@ Projektą kuria [Lietuvos piliečių mokslo asociacija](https://www.pilieciumoks
 
 ## Ką galima daryti
 
-- Atsidarius puslapį matyti koliažas iš įvairaus dydžio objektų nuotraukų, kaskart išmėtytas vis kitaip. Nuotraukas galima tempti pele.
-- Viršutiniame meniu pasirinkus rūšį, spalvą, regioną ar paiešką, skiautės susitvarko į tvarkingą tinklelį. „Visi“ jas vėl išmėto.
+- Atsidarius puslapį matyti didelė balta drobė su įvairaus dydžio objektų nuotraukomis, kaskart išdėliotomis vis kitaip. Drobę galima tempti pele ar pirštu, slinkti pelės ratuku.
+- Meniu „Rūšys“ ir „Ieškoti“ leidžia rinktis rūšį, žodį, spalvą ar regioną. Tada nuotraukos susitvarko į tvarkingą tinklelį. „Išvalyti“ grąžina drobę.
 - Pasirinkus juostas, galima rinktis techniką (rinktinė, pintinė ir kitos).
 - Atverti objektą: muziejaus aprašas, kilmės vieta, datavimas, medžiagos, licencija ir nuoroda į pilną įrašą. Iš objekto spalvų galima rasti kitus panašių spalvų objektus.
 - Rasti pamokas ir šaltinius per „Kaip pasidaryti“ (64 patikrintos nuorodos, pirmiausia LNKC nematerialaus paveldo sąvado įrašai).

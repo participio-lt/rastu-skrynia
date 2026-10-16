@@ -325,9 +325,11 @@ footer{border-top:1.5px solid var(--ink)}
 #clHow .howto summary{padding:12px 0}
 #clHow .howto ul{padding:0 0 14px}
 .cl-narrow{display:none}
+.cl-sheet-links{display:flex;flex-wrap:wrap;gap:22px;margin-top:24px}
+a.cl-link{text-decoration:none}
 @media (max-width:640px){
   .cl-wide{display:none}
-  .cl-narrow{display:inline-flex;margin-top:22px}
+  .cl-narrow{display:inline-flex}
   .cl-row{flex-wrap:nowrap;gap:10px;padding-block:14px}
   .cl-brand{font-size:1.1rem}
   .cl-nav{gap:13px}
@@ -351,25 +353,8 @@ footer{border-top:1.5px solid var(--ink)}
 .cv-item{position:absolute;padding:0;margin:0;border:0;background:none;cursor:pointer;display:block}
 .cv-cap{display:block;font:500 .78rem/1.3 var(--display);color:var(--ink);text-align:left;padding-top:6px;opacity:0;transition:opacity .2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cv-item:hover .cv-cap,.cv-item:focus-visible .cv-cap{opacity:1}
-.cv-hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);margin:0;font:600 .8rem/1 var(--display);background:var(--ink);color:var(--linen);padding:8px 14px;border-radius:999px;pointer-events:none;animation:hintOut .6s ease 3s forwards}
+.cv-hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);margin:0;font:600 .8rem/1 var(--display);background:var(--ink);color:var(--linen);padding:8px 14px;border-radius:999px;white-space:nowrap;pointer-events:none;animation:hintOut .6s ease 3s forwards}
 @keyframes hintOut{to{opacity:0}}
-/* Juostos: rows sliding sideways */
-.cl-area.look-bands{overflow:hidden}
-.bd-wrap{display:flex;flex-direction:column;height:100%;box-sizing:border-box}
-.bd-row{overflow:hidden;position:relative;flex:none}
-.bd-track{display:flex;gap:12px;padding-right:12px;width:max-content;height:100%;animation:bandSlide var(--dur) linear infinite;will-change:transform}
-.bd-row:hover .bd-track{animation-play-state:paused}
-@keyframes bandSlide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.bd-item{flex:none;padding:0;margin:0;border:0;background:none;cursor:pointer;display:block}
-.bd-item .sc-img{height:100%}
-.bd-item .sc-img img{transition:opacity .35s,transform .4s}
-.bd-item:hover .sc-img img{transform:scale(1.05)}
-@media (max-width:600px){ .bd-track{gap:8px;padding-right:8px} }
-/* Temporary switch for comparing the three layouts */
-.looks{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:960;display:flex;align-items:center;gap:2px;background:var(--ink);padding:4px;border-radius:999px;box-shadow:var(--shadow)}
-.looks span{color:var(--linen);font:600 .72rem/1 var(--display);padding:0 6px 0 10px;opacity:.7}
-.looks button{appearance:none;border:0;background:none;color:var(--linen);font:600 .82rem/1 var(--display);padding:8px 12px;border-radius:999px;cursor:pointer}
-.looks button[aria-pressed="true"]{background:var(--linen);color:var(--ink)}
 /* Tidy-up motion: picked pieces glide into a grid, the rest falls away */
 .scrap{transition:left .75s cubic-bezier(.2,.75,.2,1),top .75s cubic-bezier(.2,.75,.2,1),width .75s cubic-bezier(.2,.75,.2,1),opacity .45s ease,transform .75s cubic-bezier(.2,.75,.2,1)}
 .scrap.dragging{transition:none}
@@ -398,7 +383,7 @@ footer{border-top:1.5px solid var(--ink)}
     </div>
     <div class="cl-drop" id="catPanel" hidden>
       <div class="cl-bigs" id="clCats"></div>
-      <button class="cl-link cl-narrow" id="howBtn2" type="button">Kaip pasidaryti</button>
+      <div class="cl-sheet-links"><button class="cl-link cl-narrow" id="howBtn2" type="button">Kaip pasidaryti</button><a class="cl-link" href="#apie" id="aboutLink">Apie projektą</a></div>
     </div>
     <div class="cl-drop" id="findPanel" hidden>
       <form class="cl-find" id="findForm" role="search"><label class="vh" for="clQ">Ieškoti žodžio</label><input id="clQ" type="search" placeholder="Raštas, medžiaga ar vieta" autocomplete="off" enterkeyhint="search"></form>
@@ -414,9 +399,8 @@ footer{border-top:1.5px solid var(--ink)}
     <div id="clHow"></div>
   </div>
   <div class="cl-area" id="clArea"></div>
-  <div class="cl-end"><div class="empty" id="clEmpty" hidden><p>Nieko nerasta su šiais filtrais.</p><button class="btn" id="clClear" type="button">Išvalyti filtrus</button></div><button class="btn" id="clMore" type="button">Daugiau skiaučių</button></div>
+  <div class="cl-end"><div class="empty" id="clEmpty" hidden><p>Nieko nerasta su šiais filtrais.</p><button class="btn" id="clClear" type="button">Išvalyti filtrus</button></div><button class="btn" id="clMore" type="button">Rodyti daugiau</button></div>
 </main>
-<div class="looks" id="looks" role="group" aria-label="Išdėstymas"><span>Išdėstymas</span><button type="button" data-look="collage">Koliažas</button><button type="button" data-look="canvas">Drobė</button><button type="button" data-look="bands">Juostos</button></div>
 <footer id="apie">
   <div class="wrap">
     <div>
@@ -992,53 +976,13 @@ document.addEventListener("keydown", e => {
 let rT, lastW = 0; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(() => { if (document.documentElement.clientWidth !== lastW){ lastW = document.documentElement.clientWidth; renderCollage(); } if (dlg.open && view[current]) drawDetailWeave($("dBand"), view[current].pal); }, 150); });
 
 /* ---------- Collage view: scattered scraps, tidied when something is picked ---------- */
-const COLLAGE_STEP = 60, TIDY_STEP = 60;
-let collageLimit = 120, tidyLimit = 60, scrapList = [], zTop = 3000;
+const TIDY_STEP = 60;
+let collageLimit = 180, tidyLimit = 60;
 const clArea = $("clArea"), clMenu = $("clMenu");
 const isFiltered = () => state.cat !== "all" || !!state.fam || !!state.reg || !!state.q || !!state.hex || state.saved || !!state.tech;
 const RESET = () => { state.cat = "all"; state.fam = null; state.reg = null; state.q = ""; state.hex = null; hexTarget = null; state.saved = false; state.tech = null; };
-function buildScraps(items){ return items.map((d, i) => ({ kind: "img", d, i })); }
-function placeScraps(scraps){
-  const W = Math.max(320, clArea.clientWidth), r = rng(state.seed + 7);
-  const cell = W < 600 ? 92 : W < 1000 ? 118 : 140;
-  const cols = Math.max(3, Math.round(W / cell)), cw = W / cols, ch = cell * .8;
-  const solid = scraps;
-  const rows = Math.max(4, Math.ceil(solid.length / cols));
-  const slots = []; for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) slots.push([x, y]);
-  for (let i = slots.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [slots[i], slots[j]] = [slots[j], slots[i]]; }
-  solid.forEach((s, k) => {
-    const [cx, cy] = slots[k % slots.length];
-    const ar = Math.max(.25, Math.min(4, (+s.d.h || 1) / (+s.d.w || 1)));
-    const roll = r(), scale = roll < .12 ? 1.9 + r() * .7 : roll < .4 ? .55 + r() * .3 : .85 + r() * .7;
-    s.w = Math.round(cw * scale * (ar > 1.8 ? .62 : 1));
-    s.h = s.w * ar;
-    const hh = Math.min(s.h || 60, ch * 2.4);
-    s.x = Math.round(cx * cw + cw / 2 - s.w / 2 + (r() - .5) * cw * .75);
-    s.y = Math.round(cy * ch + ch / 2 - hh / 2 + (r() - .5) * ch * .7);
-    s.x = Math.max(-s.w * .12, Math.min(W - s.w * .88, s.x));
-    s.y = Math.max(8, s.y);
-    s.rot = 0;
-    s.z = scale > 1.8 ? 1 + Math.floor(r() * 10) : 10 + Math.floor(r() * 60);
-  });
-  scraps.forEach(s => { s.dx = +((r() - .5) * 12).toFixed(1); s.dy = +((r() - .5) * 12).toFixed(1); s.dur = +(5 + r() * 7).toFixed(1); s.delay = -(r() * 8).toFixed(1); });
-  clArea.style.height = Math.round(rows * ch + ch * 2.4) + "px";
-}
 function imgInner(d){
   return `<span class="sc-img" style="aspect-ratio:${Math.max(1, +d.w || 1)}/${Math.max(1, +d.h || 1)};--ph:${d.pal[0] || "#cccccc"}"><img data-id="${esc(d.id)}" alt="" decoding="async" draggable="false"></span><span class="sc-cap">${esc(d.title)}</span>`;
-}
-function scrapHTML(s){
-  const d = s.d;
-  const st = `left:${s.x}px;top:${s.y}px;width:${s.w}px;z-index:${s.z};--rot:${s.rot}deg;--dx:${s.dx}px;--dy:${s.dy}px;--dur:${s.dur}s;--delay:${s.delay}s`;
-  return `<button class="scrap scrap-img" type="button" data-i="${s.i}" data-id="${esc(d.id)}" style="${st}" aria-label="${esc(d.title)}">${imgInner(d)}</button>`;
-}
-// Scattered: a fresh random collage
-function scatter(items){
-  clArea.classList.remove("is-tidy");
-  scrapList = buildScraps(items);
-  placeScraps(scrapList);
-  if (io) io.disconnect();
-  clArea.innerHTML = scrapList.map(scrapHTML).join("");
-  observeImgs(clArea);
 }
 // Tidy: the picked pieces fly into a neat grid, everything else falls away
 function tidyPositions(items){
@@ -1120,15 +1064,12 @@ function renderCollage(){
   const items = all.slice(0, tidy ? tidyLimit : collageLimit);
   view = items;
   if (tidy){
-    if (clArea.querySelector(".cv-plane,.bd-wrap")){ clArea.innerHTML = ""; pan = null; }
-    clArea.classList.remove("look-canvas", "look-bands", "look-collage");
-    if (reduceMotion) scatter(items);
+    if (clArea.querySelector(".cv-plane")){ clArea.innerHTML = ""; pan = null; }
+    clArea.classList.remove("look-canvas");
     tidyUp(items);
   } else {
-    clArea.className = "cl-area look-" + look;
-    if (look === "canvas") renderCanvas(items);
-    else if (look === "bands") renderBands(items);
-    else scatter(items);
+    clArea.className = "cl-area look-canvas";
+    renderCanvas(items);
   }
   const c = CAT[state.cat];
   $("clHead").hidden = !tidy;
@@ -1150,8 +1091,7 @@ function renderCollage(){
   $("savedN").textContent = saved.size;
   $("savedToggle").setAttribute("aria-pressed", state.saved);
   $("clCount").textContent = items.length < all.length ? `Rodoma ${items.length} iš ${all.length}` : objektai(all.length);
-  $("clMore").hidden = all.length <= items.length || (!tidy && look !== "collage");
-  $("clMore").textContent = tidy ? "Rodyti daugiau" : "Daugiau skiaučių";
+  $("clMore").hidden = !tidy || all.length <= items.length;
   $("clEmpty").hidden = items.length > 0;
   $("clEmpty").querySelector("p").textContent = state.saved && saved.size === 0 ? "Dar nieko neišsaugojote. Atverkite skiautę ir spauskite „Išsaugoti“." : state.cat === "community" ? (canUpload ? "Bendruomenės darbų dar nėra. Būkite pirmi: spauskite „Įkelti savo darbą“." : "Bendruomenės darbų dar nėra.") : "Nieko nerasta su šiais filtrais.";
   renderMenu(); syncBar();
@@ -1162,35 +1102,13 @@ function pickInMenu(apply){
   render();
   window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
 }
-// Drag with a mouse or pen while scattered; a tap or click opens the object
-let drag = null, swallowClick = false;
-clArea.addEventListener("pointerdown", e => {
-  const el = e.target.closest(".scrap");
-  if (!el || e.pointerType === "touch" || e.button !== 0 || clArea.classList.contains("is-tidy")) return;
-  drag = { el, id: e.pointerId, sx: e.clientX, sy: e.clientY, x: parseFloat(el.style.left), y: parseFloat(el.style.top), moved: false };
-});
-window.addEventListener("pointermove", e => {
-  if (!drag || e.pointerId !== drag.id) return;
-  const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
-  if (!drag.moved){
-    if (Math.hypot(dx, dy) < 5) return;
-    drag.moved = true; drag.el.classList.add("dragging"); drag.el.style.zIndex = ++zTop;
-  }
-  drag.el.style.left = (drag.x + dx) + "px"; drag.el.style.top = (drag.y + dy) + "px";
-});
-window.addEventListener("pointerup", () => {
-  if (drag && drag.moved){ drag.el.classList.remove("dragging"); swallowClick = true; setTimeout(() => { swallowClick = false; }, 0); }
-  drag = null;
-});
 clArea.addEventListener("click", e => {
   const el = e.target.closest(".scrap"); if (!el || el.classList.contains("gone")) return;
-  if (swallowClick){ e.preventDefault(); return; }
-  if (!clArea.classList.contains("is-tidy")) el.style.zIndex = ++zTop;
   openDetail(+el.dataset.i);
 });
 $("clBrand").addEventListener("click", () => pickInMenu(() => { RESET(); state.seed = Math.floor(Math.random() * 1e9); reshuffle(); }));
 $("clScatter").addEventListener("click", () => pickInMenu(() => { RESET(); }));
-$("clMore").addEventListener("click", () => { const y = window.scrollY; if (isFiltered()) tidyLimit += TIDY_STEP; else collageLimit += COLLAGE_STEP; render(); window.scrollTo(0, y); });
+$("clMore").addEventListener("click", () => { const y = window.scrollY; tidyLimit += TIDY_STEP; render(); window.scrollTo(0, y); });
 let clQT; $("clQ").addEventListener("input", e => { clearTimeout(clQT); clQT = setTimeout(() => { state.q = e.target.value.trim(); state.saved = false; tidyLimit = 60; render(); }, 350); });
 // The two sheets: one open at a time, closed by Esc, a second click, or a click outside
 const SHEETS = { catBtn: "catPanel", findBtn: "findPanel" };
@@ -1213,6 +1131,7 @@ $("clSugg").addEventListener("click", e => { const b = e.target.closest("[data-q
 $("findForm").addEventListener("submit", e => { e.preventDefault(); pickInMenu(() => { state.q = $("clQ").value.trim(); state.saved = false; }); });
 $("clChip").addEventListener("click", e => { const b = e.target.closest("[data-unset]"); if (!b) return; const k = b.dataset.unset; pickInMenu(() => { if (k === "cat") state.cat = "all"; else if (k === "hex") setHex(null); else if (k === "fam") state.fam = null; else state[k] = k === "q" ? "" : null; }); });
 $("howBtn2").addEventListener("click", () => $("howBtn").click());
+$("aboutLink").addEventListener("click", () => closeMenu());
 $("clClear").addEventListener("click", () => pickInMenu(() => { state.q = ""; state.cat = "all"; state.fam = null; state.hex = null; hexTarget = null; state.reg = null; }));
 window.addEventListener("resize", setMenuHeight);
 $("savedToggle").addEventListener("click", () => pickInMenu(() => { const on = !state.saved; RESET(); state.saved = on; }));
@@ -1227,10 +1146,7 @@ $("howBtn").addEventListener("click", () => {
 $("howClose").addEventListener("click", () => howDlg.close());
 howDlg.addEventListener("click", e => { if (e.target === howDlg) howDlg.close(); });
 
-/* ---------- Three ways to lay out the untidied view ---------- */
-const LOOKS = ["collage", "canvas", "bands"];
-let look = "bands";
-try { const v = localStorage.getItem("rastu-skrynia:look"); if (LOOKS.includes(v)) look = v; } catch (e) {}
+/* ---------- Drobė: the untidied view is a large white plane to roam ---------- */
 const stageH = () => Math.max(380, window.innerHeight - (clMenu.querySelector(".cl-row").offsetHeight + 1));
 function mixed(n, seed){ const r = rng(seed), a = Array.from({ length: n }, (_, i) => i); for (let i = n - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 const ratio = d => Math.max(.25, Math.min(4, (+d.h || 1) / (+d.w || 1)));
@@ -1280,41 +1196,12 @@ clArea.addEventListener("pointerup", e => {
   if (tap){ const el = document.elementFromPoint(e.clientX, e.clientY); const b = el && el.closest(".cv-item"); if (b) openDetail(+b.dataset.i); }
 });
 clArea.addEventListener("wheel", e => {
-  if (!clArea.classList.contains("look-canvas") || clArea.classList.contains("is-tidy")) return;
-  e.preventDefault(); movePlane(-e.deltaX, -e.deltaY);
+  if (!pan || !clArea.classList.contains("look-canvas") || clArea.classList.contains("is-tidy")) return;
+  const bx = pan.x, by = pan.y;
+  movePlane(-e.deltaX, -e.deltaY);
+  if (pan.x !== bx || pan.y !== by) e.preventDefault();
 }, { passive: false });
 
-// Juostos: rows of objects sliding sideways like woven bands, each at its own pace
-function renderBands(items){
-  const vw = clArea.clientWidth, vh = stageH(), gap = vw < 600 ? 8 : 12;
-  const weights = vw < 600 ? [.24, .3, .22, .24] : [.17, .25, .15, .24, .19];
-  const usable = vh - gap * (weights.length + 1);
-  const rows = weights.map(() => []);
-  mixed(items.length, state.seed + 11).forEach((i, k) => rows[k % rows.length].push([items[i], i]));
-  const html = rows.map((row, k) => {
-    const h = Math.round(usable * weights[k]);
-    const cells = row.map(([d, i]) => `<button class="bd-item" type="button" data-i="${i}" style="width:${Math.round(h / ratio(d))}px;height:${h}px" aria-label="${esc(d.title)}">${plainImg(d)}</button>`).join("");
-    const width = row.reduce((s, [d]) => s + Math.round(h / ratio(d)) + gap, 0);
-    const dur = Math.max(40, Math.round(width / (22 + (k % 3) * 9)));
-    return `<div class="bd-row" style="height:${h}px"><div class="bd-track" style="--dur:${dur}s;animation-direction:${k % 2 ? "reverse" : "normal"}">${cells}${cells.replace(/<button /g, '<button tabindex="-1" aria-hidden="true" ')}</div></div>`;
-  }).join("");
-  clArea.style.height = vh + "px";
-  clArea.innerHTML = `<div class="bd-wrap" style="gap:${gap}px;padding:${gap}px 0">${html}</div>`;
-  // the rows move on the compositor, so load their images now rather than on scroll
-  clArea.querySelectorAll("img[data-id]").forEach(fill);
-}
-clArea.addEventListener("click", e => {
-  const b = e.target.closest(".bd-item"); if (!b) return;
-  openDetail(+b.dataset.i);
-});
-function setLook(v){
-  look = LOOKS.includes(v) ? v : "bands";
-  try { localStorage.setItem("rastu-skrynia:look", look); } catch (e) {}
-  document.querySelectorAll("[data-look]").forEach(b => b.setAttribute("aria-pressed", b.dataset.look === look));
-  if (isFiltered()) pickInMenu(() => RESET()); else render();
-}
-$("looks").addEventListener("click", e => { const b = e.target.closest("[data-look]"); if (b) setLook(b.dataset.look); });
-document.querySelectorAll("[data-look]").forEach(b => b.setAttribute("aria-pressed", b.dataset.look === look));
 clArea.addEventListener("click", e => { const b = e.target.closest(".cv-item"); if (b && e.detail === 0) openDetail(+b.dataset.i); });
 
 /* ---------- Start ---------- */
