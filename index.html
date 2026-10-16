@@ -354,13 +354,21 @@ a.cl-link{text-decoration:none}
 
 /* Debesis: a dense cloud of small objects per screen; one shown large with a caption */
 .cl-area.look-board{overflow:hidden;touch-action:pan-y}
-.cv-item{position:absolute;padding:0;margin:0;border:0;background:none;cursor:pointer;display:block;animation:boardIn .5s ease both;transition:transform .18s ease}
-@keyframes boardIn{from{opacity:0}to{opacity:1}}
-.cv-item .sc-img{border-radius:2px;background:var(--paper)}
-.cv-item:hover,.cv-item:focus-visible,.cv-item.is-focus{transform:scale(1.12);z-index:900!important;outline:2px solid var(--ink);outline-offset:1px}
+.cv-item{position:absolute;padding:0;margin:0;border:0;background:none;cursor:pointer;display:block;animation:cloudIn 1s cubic-bezier(.16,.84,.3,1) backwards;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
+@keyframes cloudIn{from{opacity:0;transform:translate(var(--fx,0px),var(--fy,0px)) scale(.25) rotate(var(--fr,0deg))}}
+.cv-item .sc-img{border-radius:2px;background:var(--paper);animation:cloudFloat var(--fd,8s) ease-in-out var(--fdl,0s) infinite alternate}
+@keyframes cloudFloat{from{transform:translate(calc(var(--fa,4px) * -1),var(--fa,4px))}to{transform:translate(var(--fa,4px),calc(var(--fa,4px) * -1))}}
+.cv-item:hover,.cv-item:focus-visible,.cv-item.is-focus{transform:scale(1.5);z-index:900!important;outline:2px solid var(--ink);outline-offset:1px}
+.cv-item.is-focus .sc-img{animation-play-state:paused}
+.cv-item.leaving{animation:none;transform:translate(var(--ox,0px),var(--oy,0px)) scale(.35) rotate(var(--fr,0deg));opacity:0;transition:transform .5s cubic-bezier(.55,0,.85,.35),opacity .45s ease-in;pointer-events:none}
 .focus{position:absolute;z-index:920;left:clamp(16px,4vw,56px);top:50%;transform:translateY(-50%);display:flex;align-items:flex-start;gap:0;pointer-events:none}
 .focus-img{pointer-events:auto;appearance:none;border:0;padding:clamp(10px,1.4vw,18px);background:var(--frame);cursor:pointer;display:block;box-shadow:var(--scrap-shadow)}
-.focus-img img{display:block;max-width:min(30vw,380px);max-height:58vh;width:auto;height:auto}
+.focus-img img{display:block;max-width:min(30vw,380px);max-height:58vh;width:auto;height:auto;transition:opacity .25s ease}
+.focus-img img:not([src]){opacity:0}
+.focus.swap .focus-img,.focus.swap .focus-card{animation:focusSwap .5s cubic-bezier(.2,.8,.2,1) backwards}
+.focus.swap .focus-card{animation-delay:.07s}
+@keyframes focusSwap{from{opacity:0;transform:translateX(-18px)}}
+.focus.leaving{opacity:0;transition:opacity .3s ease}
 .focus-card{pointer-events:auto;background:var(--linen);color:var(--ink);padding:14px 16px;width:min(220px,40vw);margin-left:-12px;margin-top:22px;box-shadow:var(--scrap-shadow);display:grid;gap:8px}
 .focus-t{margin:0;font:700 .95rem/1.25 var(--display)}
 .focus-m{margin:0;font:400 .82rem/1.35 var(--display);color:var(--muted)}
@@ -1191,7 +1199,7 @@ const ratio = d => Math.max(.25, Math.min(4, (+d.h || 1) / (+d.w || 1)));
 function plainImg(d, ar){ return `<span class="sc-img" style="${ar ? `aspect-ratio:${Math.max(1, +d.w || 1)}/${Math.max(1, +d.h || 1)};` : ""}--ph:${d.pal[0] || "#cccccc"}"><img data-id="${esc(d.id)}" alt="" decoding="async" draggable="false"></span>`; }
 
 // Debesis: pack a screen's worth of small objects into a ragged cloud in the middle of the black stage
-let boardPage = 0, boardPages = 1;
+let boardPage = 0, boardPages = 1, boardSig = "";
 const perPage = () => { const w = clArea.clientWidth; return w < 700 ? 40 : w < 1100 ? 90 : 120; };
 const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 function cloudCells(W, H, n, r){
@@ -1217,23 +1225,34 @@ function renderBoard(all){
   boardPage = (boardPage % boardPages + boardPages) % boardPages;
   const items = all.slice(boardPage * n, boardPage * n + n);
   view = items;
+  $("pgNum").textContent = `${boardPage + 1}/${boardPages}`;
+  // a repeat render of the same screen (a data refresh) leaves the cloud where it is
+  const sig = [state.seed, boardPage, W, H, items.map(d => d.id).join()].join("|");
+  if (sig === boardSig && clArea.querySelector(".cv-item")) return;
+  boardSig = sig;
   const r = rng(state.seed + boardPage * 31);
   const { cell, cells } = cloudCells(W, H, items.length, r);
   const spots = mixed(cells.length, state.seed + boardPage * 17).map(k => cells[k]);
   clArea.style.height = H + "px";
+  motion.cell = cell; motion.items = [];
   clArea.innerHTML = items.map((d, i) => {
     const c = spots[i], ar = ratio(d);
     let w = cell * (.9 + r() * .6); if (w * ar > cell * 1.7) w = cell * 1.7 / ar;
     const h = w * ar, x = c.px - w / 2 + (r() - .5) * cell * .3, y = c.py - h / 2 + (r() - .5) * cell * .3;
-    return `<button class="cv-item" type="button" data-i="${i}" style="left:${Math.round(x)}px;top:${Math.round(y)}px;width:${Math.round(w)}px;z-index:${1 + Math.floor(r() * 50)};animation-delay:${Math.round(r() * 400)}ms" aria-label="${esc(d.title)}">${plainImg(d, true)}</button>`;
+    const z = 1 + Math.floor(r() * 50);
+    // each object bursts out of the middle, the inner ones first
+    const fx = Math.round((W / 2 - c.px) * (.8 + r() * .2)), fy = Math.round((H / 2 - c.py) * (.8 + r() * .2));
+    const delay = Math.round(Math.sqrt(c.d) * 420 + r() * 160);
+    motion.items.push({ i, cx: x + w / 2, cy: y + h / 2, dz: 4 + z * .5, x: 0, y: 0 });
+    return `<button class="cv-item" type="button" data-i="${i}" style="left:${Math.round(x)}px;top:${Math.round(y)}px;width:${Math.round(w)}px;z-index:${z};animation-delay:${delay}ms;--fx:${fx}px;--fy:${fy}px;--fr:${Math.round((r() - .5) * 50)}deg;--fa:${(3 + r() * 5).toFixed(1)}px;--fd:${(4.5 + r() * 5).toFixed(1)}s;--fdl:-${(r() * 9).toFixed(1)}s" aria-label="${esc(d.title)}">${plainImg(d, true)}</button>`;
   }).join("") + `<div class="focus" id="focus" hidden><button class="focus-img" type="button" id="focusOpen" aria-label="Atverti"><img id="focusImg" alt=""></button><div class="focus-card"><p class="focus-t" id="focusT"></p><p class="focus-m" id="focusM"></p><button class="focus-go" type="button" id="focusGo">Atverti įrašą</button><button class="focus-save" type="button" id="focusSave"></button></div></div>`;
+  clArea.querySelectorAll(".cv-item").forEach((el, k) => { motion.items[k].el = el; });
   observeImgs(clArea);
-  $("pgNum").textContent = `${boardPage + 1}/${boardPages}`;
   if (finePointer && items.length) setFocus(Math.floor(r() * items.length));
 }
 // The enlarged object on the left follows the pointer over the cloud
 let focusI = -1;
-function setFocus(i){
+function setFocus(i, swap){
   const d = view[i], box = $("focus"); if (!d || !box) return;
   focusI = i;
   clArea.querySelectorAll(".cv-item.is-focus").forEach(el => el.classList.remove("is-focus"));
@@ -1244,6 +1263,7 @@ function setFocus(i){
   $("focusM").textContent = [(CAT[d.cat] || COMM).n, d.place, d.date].filter(Boolean).join(" · ");
   $("focusSave").textContent = saved.has(d.id) ? "Išsaugota" : "Išsaugoti";
   box.hidden = false;
+  if (swap){ box.classList.remove("swap"); void box.offsetWidth; box.classList.add("swap"); }
 }
 clArea.addEventListener("pointerover", e => {
   if (!finePointer || clArea.classList.contains("is-tidy")) return;
@@ -1253,9 +1273,58 @@ clArea.addEventListener("click", e => {
   if (e.target.closest("#focusOpen, #focusGo")){ if (focusI >= 0) openDetail(focusI); return; }
   if (e.target.closest("#focusSave")){ const d = view[focusI]; if (d){ toggleSave(d.id); $("focusSave").textContent = saved.has(d.id) ? "Išsaugota" : "Išsaugoti"; } return; }
 });
+// The cloud leans away from the pointer, nearer objects more, and the neighbours of the one under it make room
+const motion = { items: [], cell: 60, mx: 0, my: 0, tx: 0, ty: 0, px: -1e4, py: -1e4, raf: 0 };
+function motionTick(){
+  const m = motion; m.raf = 0;
+  m.mx += (m.tx - m.mx) * .07; m.my += (m.ty - m.my) * .07;
+  let busy = Math.abs(m.tx - m.mx) + Math.abs(m.ty - m.my) > .003;
+  const R = m.cell * 2.6, P = m.cell * .55;
+  for (const it of m.items){
+    // the object under the pointer holds still, so it does not slide out from under it
+    if (it.i === focusI) continue;
+    let gx = -m.mx * it.dz, gy = -m.my * it.dz;
+    const dx = it.cx - m.px, dy = it.cy - m.py, d = Math.hypot(dx, dy);
+    if (d < R && d > 0){ const f = (1 - d / R) ** 2 * P; gx += dx / d * f; gy += dy / d * f; }
+    const nx = it.x + (gx - it.x) * .14, ny = it.y + (gy - it.y) * .14;
+    if (Math.abs(nx - it.x) + Math.abs(ny - it.y) > .05){ it.x = nx; it.y = ny; it.el.style.translate = `${nx.toFixed(1)}px ${ny.toFixed(1)}px`; busy = true; }
+  }
+  if (busy) m.raf = requestAnimationFrame(motionTick);
+}
+function stir(){ if (!motion.raf && !reduceMotion) motion.raf = requestAnimationFrame(motionTick); }
+let lastMove = 0;
+document.addEventListener("pointermove", () => { lastMove = Date.now(); }, { passive: true });
+clArea.addEventListener("pointermove", e => {
+  if (!finePointer || clArea.classList.contains("is-tidy") || !motion.items.length) return;
+  const b = clArea.getBoundingClientRect(), onCard = e.target.closest(".focus");
+  motion.px = onCard ? -1e4 : e.clientX - b.left; motion.py = onCard ? -1e4 : e.clientY - b.top;
+  motion.tx = (e.clientX - b.left) / b.width * 2 - 1; motion.ty = (e.clientY - b.top) / b.height * 2 - 1;
+  stir();
+});
+clArea.addEventListener("pointerleave", () => { motion.px = motion.py = -1e4; motion.tx = motion.ty = 0; stir(); });
+// Left alone, the cloud shows one object after another
+setInterval(() => {
+  if (!finePointer || reduceMotion || document.hidden || isFiltered() || Date.now() - lastMove < 6000) return;
+  if (dlg.open || howDlg.open || $("up").open || !$("catPanel").hidden || !$("findPanel").hidden || !view.length || !$("focus")) return;
+  setFocus(Math.floor(Math.random() * view.length), true);
+}, 3500);
+// Paging: the cloud flies apart, then the next one bursts open
+let flipping = false;
 function flip(step){
-  if (isFiltered() || $("pager").hidden) return;
-  boardPage += step; render();
+  if (isFiltered() || $("pager").hidden || flipping) return;
+  boardPage += step;
+  if (reduceMotion || !motion.items.length){ render(); return; }
+  flipping = true;
+  const W = clArea.clientWidth, H = clArea.clientHeight;
+  motion.items.forEach(it => {
+    const el = it.el;
+    el.style.setProperty("--ox", Math.round((it.cx - W / 2) * 1.5 - step * W * .3) + "px");
+    el.style.setProperty("--oy", Math.round((it.cy - H / 2) * 1.5) + "px");
+    el.style.transitionDelay = Math.round(Math.random() * 140) + "ms";
+    el.classList.add("leaving");
+  });
+  const f = $("focus"); if (f) f.classList.add("leaving");
+  setTimeout(() => { flipping = false; render(); }, 560);
 }
 clArea.addEventListener("click", e => { const b = e.target.closest(".cv-item"); if (b) openDetail(+b.dataset.i); });
 $("pgPrev").addEventListener("click", () => flip(-1));
