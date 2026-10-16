@@ -352,15 +352,18 @@ a.cl-link{text-decoration:none}
 .cl-head h2{font:800 clamp(1.9rem,4vw,3.2rem)/1 var(--display);letter-spacing:-.045em;margin:0}
 .cl-head .btn{margin-left:auto}
 
-/* Drobė: a large plane to roam */
-.cl-area.look-canvas{overflow:hidden;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
-.cl-area.look-canvas.panning{cursor:grabbing}
-.cv-plane{position:absolute;left:0;top:0;will-change:transform}
-.cv-item{position:absolute;padding:0;margin:0;border:0;background:none;cursor:pointer;display:block}
+/* Drobė: one screen of objects at a time, flipped with the pager */
+.cl-area.look-board{overflow:hidden;touch-action:pan-y}
+.cv-item{position:absolute;padding:0;margin:0;border:0;background:none;cursor:pointer;display:block;animation:boardIn .45s ease both}
+@keyframes boardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .cv-cap{display:block;font:500 .78rem/1.3 var(--display);color:var(--ink);text-align:left;padding-top:6px;opacity:0;transition:opacity .2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cv-item:hover .cv-cap,.cv-item:focus-visible .cv-cap{opacity:1}
-.cv-hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);margin:0;font:600 .8rem/1 var(--display);background:var(--ink);color:var(--linen);padding:8px 14px;border-radius:999px;white-space:nowrap;pointer-events:none;animation:hintOut .6s ease 3s forwards}
-@keyframes hintOut{to{opacity:0}}
+.cv-item .sc-img img{transition:opacity .35s,transform .4s}
+.cv-item:hover .sc-img img{transform:scale(1.04)}
+.pager{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:960;display:flex;align-items:center;gap:4px;background:var(--ink);color:var(--linen);border-radius:999px;padding:4px;box-shadow:var(--shadow)}
+.pager button{appearance:none;border:0;background:none;color:var(--linen);width:40px;height:36px;border-radius:999px;font:600 1.05rem/1 var(--display);cursor:pointer}
+.pager button:hover{background:var(--linen);color:var(--ink)}
+.pager span{font:600 .85rem/1 var(--display);font-variant-numeric:tabular-nums;padding:0 8px;min-width:4.5em;text-align:center}
 /* Tidy-up motion: picked pieces glide into a grid, the rest falls away */
 .scrap{transition:left .75s cubic-bezier(.2,.75,.2,1),top .75s cubic-bezier(.2,.75,.2,1),width .75s cubic-bezier(.2,.75,.2,1),opacity .45s ease,transform .75s cubic-bezier(.2,.75,.2,1)}
 .scrap.dragging{transition:none}
@@ -409,6 +412,7 @@ a.cl-link{text-decoration:none}
   <div class="cl-area" id="clArea"></div>
   <div class="cl-end"><div class="empty" id="clEmpty" hidden><p>Nieko nerasta su šiais filtrais.</p><button class="btn" id="clClear" type="button">Išvalyti filtrus</button></div><button class="btn" id="clMore" type="button">Rodyti daugiau</button></div>
 </main>
+<div class="pager" id="pager" hidden><button type="button" id="pgPrev" aria-label="Ankstesni objektai">←</button><span id="pgNum" aria-live="polite"></span><button type="button" id="pgNext" aria-label="Kiti objektai">→</button></div>
 <footer id="apie">
   <div class="wrap">
     <div>
@@ -577,6 +581,24 @@ function reshuffle(){
     let more = true;
     while (more){ more = false; for (const u of grp) if (u.length){ order.push(u.shift()); more = true; } }
   }
+  buildBoardOrder(r);
+}
+// Board screens: every screen mixes the crafts. Single-image objects come first because they load fastest;
+// bundled ones follow a bundle at a time per craft, so neighbouring screens share downloads
+let boardOrder = [];
+function buildBoardOrder(r){
+  const pick = arr => { for (let i = arr.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
+  const weave = ix => {
+    const byCat = new Map();
+    ix.forEach(i => { const k = ALL[i].cat; if (!byCat.has(k)) byCat.set(k, new Map()); const u = ALL[i].b != null ? "b" + ALL[i].b : "i" + i; const m = byCat.get(k); if (!m.has(u)) m.set(u, []); m.get(u).push(i); });
+    const lanes = pick([...byCat.values()].map(m => pick([...m.values()]).flatMap(u => pick(u))));
+    const out = []; let more = true;
+    while (more){ more = false; for (const l of lanes) if (l.length){ out.push(l.shift()); more = true; } }
+    return out;
+  };
+  const singles = [], bundled = [];
+  ALL.forEach((d, i) => (d.b == null ? singles : bundled).push(i));
+  boardOrder = weave(singles).concat(weave(bundled));
 }
 
 /* ---------- Images: single files, bundles, community uploads ---------- */
@@ -1072,13 +1094,14 @@ function renderCollage(){
   const items = all.slice(0, tidy ? tidyLimit : collageLimit);
   view = items;
   if (tidy){
-    if (clArea.querySelector(".cv-plane")){ clArea.innerHTML = ""; pan = null; }
-    clArea.classList.remove("look-canvas");
+    if (clArea.querySelector(".cv-item")) clArea.innerHTML = "";
+    clArea.classList.remove("look-board");
     tidyUp(items);
   } else {
-    clArea.className = "cl-area look-canvas";
-    renderCanvas(items);
+    clArea.className = "cl-area look-board";
+    renderBoard(boardOrder.map(i => ALL[i]));
   }
+  $("pager").hidden = tidy;
   const c = CAT[state.cat];
   $("clHead").hidden = !tidy;
   $("clTitle").textContent = state.saved ? "Išsaugoti" : c && state.cat !== "all" ? c.n : state.hex ? "Panašios spalvos" : state.q ? "„" + state.q + "“" : state.reg ? state.reg : state.fam ? (FAMS.find(f => f.k === state.fam) || {}).n || "Atrinkta" : "Atrinkta";
@@ -1106,7 +1129,7 @@ function renderCollage(){
 }
 function fillBarSelects(){}
 function pickInMenu(apply){
-  apply(); closeMenu(); tidyLimit = 60;
+  apply(); closeMenu(); tidyLimit = 60; boardPage = 0;
   render();
   window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
 }
@@ -1154,63 +1177,55 @@ $("howBtn").addEventListener("click", () => {
 $("howClose").addEventListener("click", () => howDlg.close());
 howDlg.addEventListener("click", e => { if (e.target === howDlg) howDlg.close(); });
 
-/* ---------- Drobė: the untidied view is a large white plane to roam ---------- */
+/* ---------- Drobė: one screen of objects at a time ---------- */
 const stageH = () => Math.max(380, window.innerHeight - (clMenu.querySelector(".cl-row").offsetHeight + 1));
 function mixed(n, seed){ const r = rng(seed), a = Array.from({ length: n }, (_, i) => i); for (let i = n - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 const ratio = d => Math.max(.25, Math.min(4, (+d.h || 1) / (+d.w || 1)));
 function plainImg(d, ar){ return `<span class="sc-img" style="${ar ? `aspect-ratio:${Math.max(1, +d.w || 1)}/${Math.max(1, +d.h || 1)};` : ""}--ph:${d.pal[0] || "#cccccc"}"><img data-id="${esc(d.id)}" alt="" decoding="async" draggable="false"></span>`; }
 
-// Drobė: objects float on a large white plane; drag, scroll or swipe to roam
-let pan = null;
-function renderCanvas(items){
-  const vw = clArea.clientWidth, vh = stageH(), r = rng(state.seed + 3);
-  const cell = vw < 600 ? 150 : 240;
-  const cols = Math.max(4, Math.ceil(Math.sqrt(items.length * 1.7))), rows = Math.ceil(items.length / cols);
-  const PW = cols * cell, PH = rows * cell;
-  const html = mixed(items.length, state.seed + 5).map((i, k) => {
-    const d = items[i], ar = ratio(d), cx = k % cols, cy = Math.floor(k / cols);
-    let w = cell * (.38 + r() * .44); if (ar > 1.6) w *= .62;
-    const h = w * ar, x = cx * cell + r() * Math.max(0, cell - w), y = cy * cell + r() * Math.max(0, cell - Math.min(h, cell));
-    return `<button class="cv-item" type="button" data-i="${i}" style="left:${Math.round(x)}px;top:${Math.round(y)}px;width:${Math.round(w)}px" aria-label="${esc(d.title)}">${plainImg(d, true)}<span class="cv-cap">${esc(d.title)}</span></button>`;
+// Drobė: the objects that fit one screen, each in its own patch of white, at varied sizes
+let boardPage = 0, boardPages = 1;
+const perPage = () => { const w = clArea.clientWidth; return w < 600 ? 10 : w < 1000 ? 16 : w < 1500 ? 22 : 28; };
+function renderBoard(all){
+  const W = clArea.clientWidth, H = stageH(), n = perPage();
+  boardPages = Math.max(1, Math.ceil(all.length / n));
+  boardPage = (boardPage % boardPages + boardPages) % boardPages;
+  const items = all.slice(boardPage * n, boardPage * n + n);
+  view = items;
+  const pad = W < 600 ? 10 : 28, low = 64;
+  const cols = Math.max(2, Math.round(Math.sqrt(n * W / Math.max(1, H - low)))), rows = Math.ceil(n / cols);
+  const cw = (W - pad * 2) / cols, ch = (H - pad - low) / rows, r = rng(state.seed + boardPage * 31);
+  const slots = mixed(cols * rows, state.seed + boardPage * 17);
+  clArea.style.height = H + "px";
+  clArea.innerHTML = items.map((d, i) => {
+    const k = slots[i], cx = k % cols, cy = Math.floor(k / cols), ar = ratio(d);
+    const fit = Math.min(cw * .94, (ch - 22) * .94 / ar), w = fit * (.72 + r() * .28), h = w * ar;
+    const x = pad + cx * cw + r() * Math.max(0, cw - w), y = pad + cy * ch + r() * Math.max(0, ch - 22 - h);
+    return `<button class="cv-item" type="button" data-i="${i}" style="left:${Math.round(x)}px;top:${Math.round(y)}px;width:${Math.round(w)}px;animation-delay:${(i * 18)}ms" aria-label="${esc(d.title)}">${plainImg(d, true)}<span class="cv-cap">${esc(d.title)}</span></button>`;
   }).join("");
-  clArea.style.height = vh + "px";
-  clArea.innerHTML = `<div class="cv-plane" style="width:${PW}px;height:${PH}px"></div><p class="cv-hint">Tempkite, kad apžiūrėtumėte</p>`;
-  const plane = clArea.firstChild; plane.innerHTML = html;
-  pan = { plane, x: Math.round((vw - PW) / 2), y: Math.round((vh - PH) / 2), PW, PH, vw, vh };
-  movePlane(0, 0);
-  observeImgs(plane);
+  observeImgs(clArea);
+  $("pgNum").textContent = `${boardPage + 1} / ${boardPages}`;
 }
-function movePlane(dx, dy){
-  if (!pan) return;
-  const m = 120;
-  pan.x = Math.min(m, Math.max(pan.vw - pan.PW - m, pan.x + dx));
-  pan.y = Math.min(m, Math.max(pan.vh - pan.PH - m, pan.y + dy));
-  pan.plane.style.transform = `translate(${pan.x}px,${pan.y}px)`;
+function flip(step){
+  if (isFiltered() || $("pager").hidden) return;
+  boardPage += step; render();
 }
-let drag2 = null;
-clArea.addEventListener("pointerdown", e => {
-  if (!clArea.classList.contains("look-canvas") || clArea.classList.contains("is-tidy")) return;
-  drag2 = { id: e.pointerId, sx: e.clientX, sy: e.clientY, lx: e.clientX, ly: e.clientY, moved: false };
-  clArea.setPointerCapture && clArea.setPointerCapture(e.pointerId);
+clArea.addEventListener("click", e => { const b = e.target.closest(".cv-item"); if (b) openDetail(+b.dataset.i); });
+$("pgPrev").addEventListener("click", () => flip(-1));
+$("pgNext").addEventListener("click", () => flip(1));
+document.addEventListener("keydown", e => {
+  if (dlg.open || howDlg.open || $("up").open || /input|textarea|select/i.test(e.target.tagName)) return;
+  if (e.key === "ArrowRight") flip(1);
+  if (e.key === "ArrowLeft") flip(-1);
 });
-clArea.addEventListener("pointermove", e => {
-  if (!drag2 || e.pointerId !== drag2.id) return;
-  if (!drag2.moved && Math.hypot(e.clientX - drag2.sx, e.clientY - drag2.sy) > 5){ drag2.moved = true; clArea.classList.add("panning"); }
-  if (drag2.moved){ movePlane(e.clientX - drag2.lx, e.clientY - drag2.ly); drag2.lx = e.clientX; drag2.ly = e.clientY; }
-});
+// a sideways swipe on a phone flips too
+let swipe = null;
+clArea.addEventListener("pointerdown", e => { if (e.pointerType === "touch") swipe = { x: e.clientX, y: e.clientY }; });
 clArea.addEventListener("pointerup", e => {
-  if (!drag2) return;
-  const tap = !drag2.moved; drag2 = null; clArea.classList.remove("panning");
-  if (tap){ const el = document.elementFromPoint(e.clientX, e.clientY); const b = el && el.closest(".cv-item"); if (b) openDetail(+b.dataset.i); }
+  if (!swipe) return;
+  const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y; swipe = null;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) flip(dx < 0 ? 1 : -1);
 });
-clArea.addEventListener("wheel", e => {
-  if (!pan || !clArea.classList.contains("look-canvas") || clArea.classList.contains("is-tidy")) return;
-  const bx = pan.x, by = pan.y;
-  movePlane(-e.deltaX, -e.deltaY);
-  if (pan.x !== bx || pan.y !== by) e.preventDefault();
-}, { passive: false });
-
-clArea.addEventListener("click", e => { const b = e.target.closest(".cv-item"); if (b && e.detail === 0) openDetail(+b.dataset.i); });
 
 /* ---------- Start ---------- */
 const museums = new Set(DATA.filter(d => d.via !== "commons").map(d => d.provider)).size;

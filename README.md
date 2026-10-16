@@ -8,7 +8,7 @@ Projektą kuria [Lietuvos piliečių mokslo asociacija](https://www.pilieciumoks
 
 ## Ką galima daryti
 
-- Atsidarius puslapį matyti didelė balta drobė su įvairaus dydžio objektų nuotraukomis, kaskart išdėliotomis vis kitaip. Drobę galima tempti pele ar pirštu, slinkti pelės ratuku.
+- Atsidarius puslapį viename ekrane matyti įvairaus dydžio objektų nuotraukos iš visų rūšių, kaskart išdėliotos vis kitaip. Kitus objektus rodo rodyklės apačioje, klaviatūros rodyklės arba braukimas telefone.
 - Meniu „Rūšys“ ir „Ieškoti“ leidžia rinktis rūšį, žodį, spalvą ar regioną. Tada nuotraukos susitvarko į tvarkingą tinklelį. „Išvalyti“ grąžina drobę.
 - Pasirinkus juostas, galima rinktis techniką (rinktinė, pintinė ir kitos).
 - Atverti objektą: muziejaus aprašas, kilmės vieta, datavimas, medžiagos, licencija ir nuoroda į pilną įrašą. Iš objekto spalvų galima rasti kitus panašių spalvų objektus.
