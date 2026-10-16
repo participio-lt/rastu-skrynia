@@ -361,7 +361,8 @@ a.cl-link{text-decoration:none}
 .cv-item:hover,.cv-item:focus-visible,.cv-item.is-focus{transform:scale(1.5);z-index:900!important;outline:2px solid var(--ink);outline-offset:1px}
 .cv-item.is-focus .sc-img{animation-play-state:paused}
 .cv-item.leaving{animation:none;transform:translate(var(--ox,0px),var(--oy,0px)) scale(.35) rotate(var(--fr,0deg));opacity:0;transition:transform .5s cubic-bezier(.55,0,.85,.35),opacity .45s ease-in;pointer-events:none}
-.focus{position:absolute;z-index:920;left:clamp(16px,4vw,56px);top:50%;transform:translateY(-50%);display:flex;align-items:flex-start;gap:0;pointer-events:none}
+.focus{position:absolute;z-index:920;left:clamp(16px,4vw,56px);top:50%;transform:translateY(-50%);display:flex;align-items:flex-start;gap:0;pointer-events:none;transition:opacity .25s ease,visibility .25s}
+.focus.off{opacity:0;visibility:hidden}
 .focus-img{pointer-events:auto;appearance:none;border:0;padding:clamp(10px,1.4vw,18px);background:var(--frame);cursor:pointer;display:block;box-shadow:var(--scrap-shadow)}
 .focus-img img{display:block;max-width:min(30vw,380px);max-height:58vh;width:auto;height:auto;transition:opacity .25s ease}
 .focus-img img:not([src]){opacity:0}
@@ -1245,14 +1246,15 @@ function renderBoard(all){
     const delay = Math.round(Math.sqrt(c.d) * 420 + r() * 160);
     motion.items.push({ i, cx: x + w / 2, cy: y + h / 2, dz: 4 + z * .5, x: 0, y: 0 });
     return `<button class="cv-item" type="button" data-i="${i}" style="left:${Math.round(x)}px;top:${Math.round(y)}px;width:${Math.round(w)}px;z-index:${z};animation-delay:${delay}ms;--fx:${fx}px;--fy:${fy}px;--fr:${Math.round((r() - .5) * 50)}deg;--fa:${(3 + r() * 5).toFixed(1)}px;--fd:${(4.5 + r() * 5).toFixed(1)}s;--fdl:-${(r() * 9).toFixed(1)}s" aria-label="${esc(d.title)}">${plainImg(d, true)}</button>`;
-  }).join("") + `<div class="focus" id="focus" hidden><button class="focus-img" type="button" id="focusOpen" aria-label="Atverti"><img id="focusImg" alt=""></button><div class="focus-card"><p class="focus-t" id="focusT"></p><p class="focus-m" id="focusM"></p><button class="focus-go" type="button" id="focusGo">Atverti įrašą</button><button class="focus-save" type="button" id="focusSave"></button></div></div>`;
+  }).join("") + `<div class="focus off" id="focus"><button class="focus-img" type="button" id="focusOpen" aria-label="Atverti"><img id="focusImg" alt=""></button><div class="focus-card"><p class="focus-t" id="focusT"></p><p class="focus-m" id="focusM"></p><button class="focus-go" type="button" id="focusGo">Atverti įrašą</button><button class="focus-save" type="button" id="focusSave"></button></div></div>`;
   clArea.querySelectorAll(".cv-item").forEach((el, k) => { motion.items[k].el = el; });
   observeImgs(clArea);
-  if (finePointer && items.length) setFocus(Math.floor(r() * items.length));
+  focusI = -1;
 }
-// The enlarged object on the left follows the pointer over the cloud
-let focusI = -1;
-function setFocus(i, swap){
+// The object under the pointer is shown large on the left; nothing is picked until then
+let focusI = -1, unfocusT = 0;
+function setFocus(i){
+  clearTimeout(unfocusT);
   const d = view[i], box = $("focus"); if (!d || !box) return;
   focusI = i;
   clArea.querySelectorAll(".cv-item.is-focus").forEach(el => el.classList.remove("is-focus"));
@@ -1262,12 +1264,27 @@ function setFocus(i, swap){
   $("focusT").textContent = d.title;
   $("focusM").textContent = [(CAT[d.cat] || COMM).n, d.place, d.date].filter(Boolean).join(" · ");
   $("focusSave").textContent = saved.has(d.id) ? "Išsaugota" : "Išsaugoti";
-  box.hidden = false;
-  if (swap){ box.classList.remove("swap"); void box.offsetWidth; box.classList.add("swap"); }
+  if (box.classList.contains("off")){ box.classList.remove("off", "swap"); void box.offsetWidth; box.classList.add("swap"); }
+}
+function clearFocus(){
+  focusI = -1;
+  clArea.querySelectorAll(".cv-item.is-focus").forEach(el => el.classList.remove("is-focus"));
+  const box = $("focus"); if (box) box.classList.add("off");
+  stir();
 }
 clArea.addEventListener("pointerover", e => {
   if (!finePointer || clArea.classList.contains("is-tidy")) return;
-  const b = e.target.closest(".cv-item"); if (b && +b.dataset.i !== focusI) setFocus(+b.dataset.i);
+  if (e.target.closest(".focus")){ clearTimeout(unfocusT); return; }
+  const b = e.target.closest(".cv-item"); if (!b) return;
+  clearTimeout(unfocusT);
+  if (+b.dataset.i !== focusI) setFocus(+b.dataset.i);
+});
+// off an object and off the preview, the pick lets go after a moment
+clArea.addEventListener("pointerout", e => {
+  if (!finePointer || clArea.classList.contains("is-tidy") || !e.target.closest(".cv-item, .focus")) return;
+  const to = e.relatedTarget;
+  if (to && to.closest && to.closest(".cv-item, .focus")) return;
+  clearTimeout(unfocusT); unfocusT = setTimeout(clearFocus, 500);
 });
 clArea.addEventListener("click", e => {
   if (e.target.closest("#focusOpen, #focusGo")){ if (focusI >= 0) openDetail(focusI); return; }
@@ -1292,8 +1309,6 @@ function motionTick(){
   if (busy) m.raf = requestAnimationFrame(motionTick);
 }
 function stir(){ if (!motion.raf && !reduceMotion) motion.raf = requestAnimationFrame(motionTick); }
-let lastMove = 0;
-document.addEventListener("pointermove", () => { lastMove = Date.now(); }, { passive: true });
 clArea.addEventListener("pointermove", e => {
   if (!finePointer || clArea.classList.contains("is-tidy") || !motion.items.length) return;
   const b = clArea.getBoundingClientRect(), onCard = e.target.closest(".focus");
@@ -1302,12 +1317,6 @@ clArea.addEventListener("pointermove", e => {
   stir();
 });
 clArea.addEventListener("pointerleave", () => { motion.px = motion.py = -1e4; motion.tx = motion.ty = 0; stir(); });
-// Left alone, the cloud shows one object after another
-setInterval(() => {
-  if (!finePointer || reduceMotion || document.hidden || isFiltered() || Date.now() - lastMove < 6000) return;
-  if (dlg.open || howDlg.open || $("up").open || !$("catPanel").hidden || !$("findPanel").hidden || !view.length || !$("focus")) return;
-  setFocus(Math.floor(Math.random() * view.length), true);
-}, 3500);
 // Paging: the cloud flies apart, then the next one bursts open
 let flipping = false;
 function flip(step){
