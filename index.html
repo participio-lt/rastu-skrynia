@@ -397,6 +397,9 @@ a.cl-link{text-decoration:none}
 .ln-sort button[data-sort]{appearance:none;border:0;background:none;padding:2px 0;font:600 1rem/1.25 var(--display);color:var(--ink);cursor:pointer;border-bottom:1.5px solid transparent}
 .ln-sort button[data-sort]:hover{color:var(--madder)}
 .ln-sort button[aria-pressed="true"]{border-bottom-color:var(--ink)}
+.ln-dots{display:inline-flex;flex-wrap:wrap;gap:7px;align-self:center}
+.ln-dots .sw{width:18px;height:18px}
+.ln-dots .sw:disabled{opacity:.2;cursor:default}
 .cl-area.look-lenta{overflow:hidden}
 .ln-item{position:absolute;padding:0;margin:0;border:0;background:none;cursor:grab;display:block;touch-action:none;user-select:none;-webkit-user-select:none;transition:left .6s cubic-bezier(.2,.8,.2,1),top .6s cubic-bezier(.2,.8,.2,1),width .6s cubic-bezier(.2,.8,.2,1)}
 .ln-item .sc-img{border-radius:2px}
@@ -460,7 +463,7 @@ a.cl-link{text-decoration:none}
   </div>
   <div class="ln-bar" id="lnBar" hidden>
     <div class="ln-t"><h2 id="lnTitle"></h2><span class="count" id="lnCount"></span><button class="cl-link" id="lnClear" type="button" hidden>Išvalyti</button></div>
-    <div class="ln-sort" role="group" aria-label="Rikiuoti"><span class="ln-k">Rikiuoti</span><button type="button" data-sort="spalva" aria-pressed="false">Spalva</button><button type="button" data-sort="laikas" aria-pressed="false">Laikas</button><button type="button" data-sort="rusis" aria-pressed="false">Rūšis</button><button type="button" data-sort="regionas" aria-pressed="false">Regionas</button><button class="cl-link" id="lnTidy" type="button" style="visibility:hidden">Sutvarkyti</button></div>
+    <div class="ln-sort" role="group" aria-label="Rikiuoti"><span class="ln-k">Rikiuoti</span><button type="button" data-sort="spalva" aria-pressed="false">Spalva</button><span class="ln-dots" id="lnDots" role="group" aria-label="Rodyti tik šios spalvos objektus" hidden></span><button type="button" data-sort="laikas" aria-pressed="false">Laikas</button><button type="button" data-sort="rusis" aria-pressed="false">Rūšis</button><button type="button" data-sort="regionas" aria-pressed="false">Regionas</button><button class="cl-link" id="lnTidy" type="button" style="visibility:hidden">Sutvarkyti</button></div>
   </div>
   <div class="cl-area" id="clArea"></div>
   <div class="cl-end"><div class="empty" id="clEmpty" hidden><p>Nieko nerasta su šiais filtrais.</p><button class="btn" id="clClear" type="button">Išvalyti filtrus</button></div><button class="btn" id="clMore" type="button">Rodyti daugiau</button></div>
@@ -1483,6 +1486,10 @@ function renderLenta(){
   $("lnCount").textContent = objektai(all.length);
   $("lnClear").hidden = !isFiltered();
   document.querySelectorAll("[data-sort]").forEach(b => b.setAttribute("aria-pressed", b.dataset.sort === lnSort));
+  // sorting by colour opens a row of colour dots; a dot keeps only objects where that colour dominates
+  const famPool = ALL.filter(d => matches(d, "fam"));
+  $("lnDots").hidden = lnSort !== "spalva" && !state.fam;
+  $("lnDots").innerHTML = FAMS.map(f => { const on = state.fam === f.k, none = !on && !famPool.some(d => d.fam.includes(f.k)); return `<button class="sw" type="button" data-lnfam="${f.k}" style="background:${f.c}" aria-pressed="${on}" aria-label="${f.n}" title="${f.n}"${none ? " disabled" : ""}></button>`; }).join("");
   // kept in the layout even when unused, so the bar never changes height under the board
   $("lnTidy").style.visibility = lnMoved.size ? "visible" : "hidden";
   $("pgNum").textContent = `${lnPage + 1}/${lnPages}`;
@@ -1565,6 +1572,8 @@ clArea.addEventListener("click", e => {
   openDetail(+el.dataset.i);
 });
 $("lnBar").addEventListener("click", e => {
+  const f = e.target.closest("[data-lnfam]");
+  if (f){ state.fam = state.fam === f.dataset.lnfam ? null : f.dataset.lnfam; state.hex = null; hexTarget = null; render(); return; }
   const b = e.target.closest("[data-sort]"); if (!b) return;
   lnSort = lnSort === b.dataset.sort ? null : b.dataset.sort;
   render();
