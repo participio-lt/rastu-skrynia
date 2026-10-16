@@ -8,8 +8,8 @@ Projektą kuria [Lietuvos piliečių mokslo asociacija](https://www.pilieciumoks
 
 ## Ką galima daryti
 
-- Atsidarius puslapį viename ekrane matyti įvairaus dydžio objektų nuotraukos iš visų rūšių, kaskart išdėliotos vis kitaip. Kitus objektus rodo rodyklės apačioje, klaviatūros rodyklės arba braukimas telefone.
-- Meniu „Rūšys“ ir „Ieškoti“ leidžia rinktis rūšį, žodį, spalvą ar regioną. Tada nuotraukos susitvarko į tvarkingą tinklelį. „Išvalyti“ grąžina drobę.
+- Atsidarius puslapį juodame fone matyti tankus objektų nuotraukų debesis iš visų rūšių, kaskart išdėliotas vis kitaip. Užvedus pelę ant objekto, kairėje jis parodomas didesnis su pavadinimu, vieta ir data. Kitus objektus rodo rodyklės viršuje dešinėje, klaviatūros rodyklės arba braukimas telefone.
+- Meniu „Rūšys“ ir „Ieškoti“ leidžia rinktis rūšį, žodį, spalvą ar regioną. Tada nuotraukos susitvarko į tvarkingą tinklelį. „Išvalyti“ grąžina debesį.
 - Pasirinkus juostas, galima rinktis techniką (rinktinė, pintinė ir kitos).
 - Atverti objektą: muziejaus aprašas, kilmės vieta, datavimas, medžiagos, licencija ir nuoroda į pilną įrašą. Iš objekto spalvų galima rasti kitus panašių spalvų objektus.
 - Rasti pamokas ir šaltinius per „Kaip pasidaryti“ (64 patikrintos nuorodos, pirmiausia LNKC nematerialaus paveldo sąvado įrašai).
