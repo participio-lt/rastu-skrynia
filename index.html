@@ -375,11 +375,44 @@ a.cl-link{text-decoration:none}
 .focus-m{margin:0;font:400 .82rem/1.35 var(--display);color:var(--muted)}
 .focus-go{justify-self:start;appearance:none;border:0;background:none;padding:0;font:700 .82rem/1 var(--display);color:var(--accent2);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .focus-save{justify-self:start;appearance:none;border:0;background:none;padding:0;font:700 .82rem/1 var(--display);color:var(--madder);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-.pager{position:fixed;right:clamp(16px,3vw,40px);top:calc(var(--clmenu,60px) + 14px);z-index:960;display:flex;align-items:center;gap:2px;background:var(--paper);color:var(--ink);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
+/* The view switch sits beside the pager, top right */
+.cl-tools{position:fixed;right:clamp(16px,3vw,40px);top:calc(var(--clmenu,60px) + 14px);z-index:960;display:flex;align-items:center;gap:8px}
+.vsw{display:flex;gap:2px;background:var(--paper);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
+.vsw button{appearance:none;border:0;background:none;color:var(--ink);height:32px;padding:0 14px;border-radius:999px;font:600 .85rem/1 var(--display);cursor:pointer}
+.vsw button:hover{color:var(--madder)}
+.vsw button[aria-pressed="true"]{background:var(--ink);color:var(--linen)}
+.cl-head-row{padding-right:calc(var(--toolsw,160px) + 8px)}
+.pager{display:flex;align-items:center;gap:2px;background:var(--paper);color:var(--ink);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
 .pager button{appearance:none;border:0;background:none;color:var(--ink);width:34px;height:32px;border-radius:999px;font:600 1rem/1 var(--display);cursor:pointer}
 .pager button:hover{background:var(--ink);color:var(--linen)}
 .pager span{font:600 .85rem/1 var(--display);font-variant-numeric:tabular-nums;padding:0 6px;min-width:3.6em;text-align:center}
 @media (max-width:700px){ .focus{display:none} }
+
+/* Lenta: the same objects in a grid that can be sorted, and each one dragged anywhere */
+.ln-bar{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 32px;padding:18px clamp(16px,3vw,40px) 8px;padding-right:calc(var(--toolsw,300px) + clamp(16px,3vw,40px) + 16px)}
+.ln-t{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.ln-t h2{font:800 clamp(1.4rem,2.6vw,2rem)/1 var(--display);letter-spacing:-.04em;margin:0}
+.ln-sort{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+.ln-k{font:700 .72rem/1.3 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.ln-sort button[data-sort]{appearance:none;border:0;background:none;padding:2px 0;font:600 1rem/1.25 var(--display);color:var(--ink);cursor:pointer;border-bottom:1.5px solid transparent}
+.ln-sort button[data-sort]:hover{color:var(--madder)}
+.ln-sort button[aria-pressed="true"]{border-bottom-color:var(--ink)}
+.cl-area.look-lenta{overflow:hidden}
+.ln-item{position:absolute;padding:0;margin:0;border:0;background:none;cursor:grab;display:block;touch-action:none;user-select:none;-webkit-user-select:none;transition:left .6s cubic-bezier(.2,.8,.2,1),top .6s cubic-bezier(.2,.8,.2,1),width .6s cubic-bezier(.2,.8,.2,1)}
+.ln-item .sc-img{border-radius:2px}
+.ln-item:hover,.ln-item:focus-visible{outline:2px solid var(--ink);outline-offset:2px;z-index:1500!important}
+.ln-item.dragging{cursor:grabbing;transition:none;z-index:2000!important}
+.ln-item.dragging .sc-img{box-shadow:var(--shadow)}
+.ln-cap{position:absolute;left:0;top:calc(100% + 6px);max-width:240px;overflow:hidden;text-overflow:ellipsis;font:600 .78rem/1.25 var(--display);color:var(--ink);background:var(--linen);padding:2px 5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s}
+.ln-item:hover .ln-cap,.ln-item:focus-visible .ln-cap{opacity:1}
+.ln-item.dragging .ln-cap{opacity:0}
+.ln-label{position:absolute;display:grid;align-content:center;gap:6px;font:800 clamp(.95rem,1.5vw,1.3rem)/1.05 var(--display);letter-spacing:-.02em;color:var(--ink);pointer-events:none;transition:left .6s cubic-bezier(.2,.8,.2,1),top .6s cubic-bezier(.2,.8,.2,1)}
+.ln-label span{font:400 .78rem var(--mono);letter-spacing:0;color:var(--muted)}
+.ln-new{animation:lnIn .5s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes lnIn{from{opacity:0;transform:scale(.6)}}
+.ln-gone{opacity:0;transform:scale(.85);transition:opacity .3s ease,transform .3s ease;pointer-events:none}
+.ln-empty{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:var(--muted);font:400 1rem/1.4 var(--display);padding:16px}
+@media (max-width:700px){ .ln-bar{padding-right:clamp(16px,3vw,40px);padding-top:64px} }
 /* Tidy-up motion: picked pieces glide into a grid, the rest falls away */
 .scrap{transition:left .75s cubic-bezier(.2,.75,.2,1),top .75s cubic-bezier(.2,.75,.2,1),width .75s cubic-bezier(.2,.75,.2,1),opacity .45s ease,transform .75s cubic-bezier(.2,.75,.2,1)}
 .scrap.dragging{transition:none}
@@ -425,10 +458,14 @@ a.cl-link{text-decoration:none}
     <div class="cl-words" id="clTechs" role="group" aria-label="Technika" hidden></div>
     <div id="clHow"></div>
   </div>
+  <div class="ln-bar" id="lnBar" hidden>
+    <div class="ln-t"><h2 id="lnTitle"></h2><span class="count" id="lnCount"></span><button class="cl-link" id="lnClear" type="button" hidden>Išvalyti</button></div>
+    <div class="ln-sort" role="group" aria-label="Rikiuoti"><span class="ln-k">Rikiuoti</span><button type="button" data-sort="spalva" aria-pressed="false">Spalva</button><button type="button" data-sort="laikas" aria-pressed="false">Laikas</button><button type="button" data-sort="rusis" aria-pressed="false">Rūšis</button><button type="button" data-sort="regionas" aria-pressed="false">Regionas</button><button class="cl-link" id="lnTidy" type="button" style="visibility:hidden">Sutvarkyti</button></div>
+  </div>
   <div class="cl-area" id="clArea"></div>
   <div class="cl-end"><div class="empty" id="clEmpty" hidden><p>Nieko nerasta su šiais filtrais.</p><button class="btn" id="clClear" type="button">Išvalyti filtrus</button></div><button class="btn" id="clMore" type="button">Rodyti daugiau</button></div>
 </main>
-<div class="pager" id="pager" hidden><button type="button" id="pgPrev" aria-label="Ankstesnis ekranas">←</button><span id="pgNum" aria-live="polite"></span><button type="button" id="pgNext" aria-label="Kitas ekranas">→</button></div>
+<div class="cl-tools" id="clTools"><div class="vsw" role="group" aria-label="Vaizdas"><button type="button" data-view="debesis" aria-pressed="true">Debesis</button><button type="button" data-view="lenta" aria-pressed="false">Lenta</button></div><div class="pager" id="pager" hidden><button type="button" id="pgPrev" aria-label="Ankstesnis ekranas">←</button><span id="pgNum" aria-live="polite"></span><button type="button" id="pgNext" aria-label="Kitas ekranas">→</button></div></div>
 <footer id="apie">
   <div class="wrap">
     <div>
@@ -1104,14 +1141,31 @@ function renderMenu(){
 function syncBar(){
   if (document.activeElement !== $("clQ")) $("clQ").value = state.q;
 }
+function viewTitle(){
+  const c = CAT[state.cat];
+  return state.saved ? "Išsaugoti" : c && state.cat !== "all" ? c.n : state.hex ? "Panašios spalvos" : state.q ? "„" + state.q + "“" : state.reg ? state.reg : state.fam ? (FAMS.find(f => f.k === state.fam) || {}).n || "Atrinkta" : "Atrinkta";
+}
+function emptyText(){
+  return state.saved && saved.size === 0 ? "Dar nieko neišsaugojote. Atverkite skiautę ir spauskite „Išsaugoti“." : state.cat === "community" ? (canUpload ? "Bendruomenės darbų dar nėra. Būkite pirmi: spauskite „Įkelti savo darbą“." : "Bendruomenės darbų dar nėra.") : "Nieko nerasta su šiais filtrais.";
+}
+function syncTools(){ document.documentElement.style.setProperty("--toolsw", $("clTools").offsetWidth + "px"); }
 function renderCollage(){
+  if (look === "lenta"){
+    $("clHead").hidden = true; $("clMore").hidden = true; $("clEmpty").hidden = true;
+    renderLenta();
+    $("savedN").textContent = saved.size;
+    $("savedToggle").setAttribute("aria-pressed", state.saved);
+    renderMenu(); syncBar(); syncTools();
+    return;
+  }
+  $("lnBar").hidden = true;
   const all = order.map(i => ALL[i]).filter(d => matches(d));
   const tidy = isFiltered();
   const items = all.slice(0, tidy ? tidyLimit : collageLimit);
   view = items;
   if (tidy){
-    if (clArea.querySelector(".cv-item")) clArea.innerHTML = "";
-    clArea.classList.remove("look-board");
+    if (clArea.querySelector(".cv-item, .ln-item, .ln-label, .ln-empty")) clArea.innerHTML = "";
+    clArea.classList.remove("look-board", "look-lenta");
     tidyUp(items);
   } else {
     clArea.className = "cl-area look-board";
@@ -1120,7 +1174,7 @@ function renderCollage(){
   $("pager").hidden = tidy;
   const c = CAT[state.cat];
   $("clHead").hidden = !tidy;
-  $("clTitle").textContent = state.saved ? "Išsaugoti" : c && state.cat !== "all" ? c.n : state.hex ? "Panašios spalvos" : state.q ? "„" + state.q + "“" : state.reg ? state.reg : state.fam ? (FAMS.find(f => f.k === state.fam) || {}).n || "Atrinkta" : "Atrinkta";
+  $("clTitle").textContent = viewTitle();
   const fam = state.fam && FAMS.find(f => f.k === state.fam);
   const chips = [];
   if (state.cat !== "all" && c && (state.q || state.fam || state.reg || state.hex)) chips.push(["cat", esc(c.n)]);
@@ -1140,8 +1194,8 @@ function renderCollage(){
   $("clCount").textContent = items.length < all.length ? `Rodoma ${items.length} iš ${all.length}` : objektai(all.length);
   $("clMore").hidden = !tidy || all.length <= items.length;
   $("clEmpty").hidden = items.length > 0;
-  $("clEmpty").querySelector("p").textContent = state.saved && saved.size === 0 ? "Dar nieko neišsaugojote. Atverkite skiautę ir spauskite „Išsaugoti“." : state.cat === "community" ? (canUpload ? "Bendruomenės darbų dar nėra. Būkite pirmi: spauskite „Įkelti savo darbą“." : "Bendruomenės darbų dar nėra.") : "Nieko nerasta su šiais filtrais.";
-  renderMenu(); syncBar();
+  $("clEmpty").querySelector("p").textContent = emptyText();
+  renderMenu(); syncBar(); syncTools();
 }
 function fillBarSelects(){}
 function pickInMenu(apply){
@@ -1310,7 +1364,7 @@ function motionTick(){
 }
 function stir(){ if (!motion.raf && !reduceMotion) motion.raf = requestAnimationFrame(motionTick); }
 clArea.addEventListener("pointermove", e => {
-  if (!finePointer || clArea.classList.contains("is-tidy") || !motion.items.length) return;
+  if (!finePointer || look !== "debesis" || clArea.classList.contains("is-tidy") || !motion.items.length) return;
   const b = clArea.getBoundingClientRect(), onCard = e.target.closest(".focus");
   motion.px = onCard ? -1e4 : e.clientX - b.left; motion.py = onCard ? -1e4 : e.clientY - b.top;
   motion.tx = (e.clientX - b.left) / b.width * 2 - 1; motion.ty = (e.clientY - b.top) / b.height * 2 - 1;
@@ -1320,7 +1374,9 @@ clArea.addEventListener("pointerleave", () => { motion.px = motion.py = -1e4; mo
 // Paging: the cloud flies apart, then the next one bursts open
 let flipping = false;
 function flip(step){
-  if (isFiltered() || $("pager").hidden || flipping) return;
+  if ($("pager").hidden) return;
+  if (look === "lenta"){ lnPage += step; render(); return; }
+  if (isFiltered() || flipping) return;
   boardPage += step;
   if (reduceMotion || !motion.items.length){ render(); return; }
   flipping = true;
@@ -1345,12 +1401,187 @@ document.addEventListener("keydown", e => {
 });
 // a sideways swipe on a phone flips too
 let swipe = null;
-clArea.addEventListener("pointerdown", e => { if (e.pointerType === "touch") swipe = { x: e.clientX, y: e.clientY }; });
+clArea.addEventListener("pointerdown", e => { if (e.pointerType === "touch" && !e.target.closest(".ln-item")) swipe = { x: e.clientX, y: e.clientY }; });
 clArea.addEventListener("pointerup", e => {
   if (!swipe) return;
   const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y; swipe = null;
   if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) flip(dx < 0 ? 1 : -1);
 });
+
+/* ---------- Lenta: sort the objects, then move them around by hand ---------- */
+let look = "debesis", lnSort = null, lnPage = 0, lnPages = 1, lnKey = "", lnZ = 100, lnDragEnd = 0;
+const lnMoved = new Map();
+const lnPer = () => { const w = clArea.clientWidth; return w < 700 ? 20 : w < 1100 ? 40 : 54; };
+function hsl(hex){
+  const n = parseInt((hex || "#888888").slice(1), 16), r = (n >> 16 & 255) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, dd = mx - mn;
+  if (!dd) return [0, 0, l];
+  const sat = dd / (1 - Math.abs(2 * l - 1));
+  const h = mx === r ? ((g - b) / dd + 6) % 6 : mx === g ? (b - r) / dd + 2 : (r - g) / dd + 4;
+  return [h * 60, sat, l];
+}
+// colours run round the colour wheel from red; whites, greys and blacks come last, light to dark
+function colourKey(d){
+  const [h, sat, l] = hsl(d.pal[0]);
+  if (sat < .15 || l < .1 || l > .93) return 1000 + (1 - l) * 100;
+  return (h + 15) % 360 + l;
+}
+const ROMAN = { XV: 15, XVI: 16, XVII: 17, XVIII: 18, XIX: 19, XX: 20, XXI: 21 };
+const toRoman = c => Object.keys(ROMAN).find(k => ROMAN[k] === c) || String(c);
+// museum dates are free text ("1934 m.", "XIX a. pab.", "XX a. 7 deš."); this reads the start of the range
+function yearOf(t){
+  if (!t) return null;
+  let m = t.match(/\d{4}/); if (m) return +m[0];
+  m = t.match(/\b([XVI]+)\s*a\./); if (!m || !ROMAN[m[1]]) return null;
+  const base = (ROMAN[m[1]] - 1) * 100, rest = t.slice(m.index + m[0].length, m.index + m[0].length + 12);
+  let k;
+  if ((k = rest.match(/^\s*(\d)\s*deš/))) return base + (+k[1] - 1) * 10 + 5;
+  if (/^\s*II\s*p\./.test(rest)) return base + 75;
+  if (/^\s*I\s*(p\.|treč)/.test(rest)) return base + 25;
+  if (/^\s*pr\./.test(rest)) return base + 8;
+  if (/^\s*vid\./.test(rest)) return base + 50;
+  if (/^\s*pab\./.test(rest)) return base + 92;
+  return base + 50;
+}
+function lentaOrder(list){
+  if (lnSort === "spalva") return list.slice().sort((a, b) => colourKey(a) - colourKey(b)).map(d => [d, null]);
+  if (lnSort === "laikas"){
+    const y = new Map(list.map(d => [d, yearOf(d.date)]));
+    return list.slice().sort((a, b) => (y.get(a) ?? 1e5) - (y.get(b) ?? 1e5)).map(d => [d, y.get(d) == null ? "Data nežinoma" : toRoman(Math.floor((y.get(d) - 1) / 100) + 1) + " a."]);
+  }
+  if (lnSort === "rusis"){
+    const ix = new Map(CATS.map((c, i) => [c.k, i]));
+    return list.slice().sort((a, b) => (ix.get(a.cat) ?? 99) - (ix.get(b.cat) ?? 99)).map(d => [d, (CAT[d.cat] || COMM).n]);
+  }
+  if (lnSort === "regionas"){
+    const ri = d => { const i = REGS.indexOf(d.reg); return i < 0 ? 99 : i; };
+    return list.slice().sort((a, b) => ri(a) - ri(b)).map(d => [d, d.reg || "Regionas nežinomas"]);
+  }
+  return list.map(d => [d, null]);
+}
+// the largest square cells that fit the stage, at most 280 px
+function lentaGrid(m, W, H){
+  let best = { s: 0, cols: 1, rows: m };
+  for (let cols = 1; cols <= m; cols++){ const rows = Math.ceil(m / cols), sz = Math.min(W / cols, H / rows); if (sz > best.s) best = { s: sz, cols, rows }; }
+  const sz = Math.min(best.s, 280);
+  return { s: sz, cols: best.cols, ox: (W - best.cols * sz) / 2, oy: (H - best.rows * sz) / 2 };
+}
+function renderLenta(){
+  const all = boardOrder.map(i => ALL[i]).filter(d => matches(d));
+  const key = JSON.stringify([state.cat, state.fam, state.hex, state.reg, state.q, state.saved, state.tech, lnSort, state.seed]);
+  if (key !== lnKey){ lnKey = key; lnMoved.clear(); lnPage = 0; }
+  const seq = lentaOrder(all), n = lnPer();
+  lnPages = Math.max(1, Math.ceil(seq.length / n));
+  lnPage = (lnPage % lnPages + lnPages) % lnPages;
+  const slice = seq.slice(lnPage * n, lnPage * n + n);
+  const groupN = new Map(); seq.forEach(([, g]) => { if (g) groupN.set(g, (groupN.get(g) || 0) + 1); });
+  const cells = []; let lastG = null;
+  slice.forEach(([d, g]) => { if (g && g !== lastG){ cells.push({ label: g }); lastG = g; } cells.push({ d }); });
+  view = slice.map(([d]) => d);
+  $("lnBar").hidden = false;
+  $("lnTitle").textContent = isFiltered() ? viewTitle() : "Visi objektai";
+  $("lnCount").textContent = objektai(all.length);
+  $("lnClear").hidden = !isFiltered();
+  document.querySelectorAll("[data-sort]").forEach(b => b.setAttribute("aria-pressed", b.dataset.sort === lnSort));
+  // kept in the layout even when unused, so the bar never changes height under the board
+  $("lnTidy").style.visibility = lnMoved.size ? "visible" : "hidden";
+  $("pgNum").textContent = `${lnPage + 1}/${lnPages}`;
+  $("pager").hidden = lnPages <= 1;
+  motion.items = [];
+  clArea.className = "cl-area look-lenta";
+  const W = clArea.clientWidth, H = Math.max(260, window.innerHeight - clMenu.querySelector(".cl-row").offsetHeight - 1 - $("lnBar").offsetHeight - 16);
+  clArea.style.height = H + "px";
+  clArea.querySelectorAll(":scope > :not(.ln-item):not(.ln-label)").forEach(el => el.remove());
+  if (!all.length){
+    clArea.querySelectorAll(".ln-item, .ln-label").forEach(el => el.remove());
+    clArea.insertAdjacentHTML("beforeend", `<div class="ln-empty"><p>${esc(emptyText())}</p></div>`);
+    return;
+  }
+  const { s: sz, cols, ox, oy } = lentaGrid(cells.length, W, H);
+  // objects already on the board glide to their new places; the rest fade in or out
+  const old = new Map(); clArea.querySelectorAll(".ln-item:not(.ln-gone), .ln-label:not(.ln-gone)").forEach(el => old.set(el.dataset.k, el));
+  const keep = new Set();
+  let fresh = 0;
+  cells.forEach((c, k) => {
+    const cx = ox + (k % cols) * sz, cy = oy + Math.floor(k / cols) * sz;
+    if (c.label){
+      const lk = "L:" + c.label;
+      let el = old.get(lk);
+      if (!el){ el = document.createElement("div"); el.className = "ln-label ln-new"; el.dataset.k = lk; el.innerHTML = `${esc(c.label)}<span>${objektai(groupN.get(c.label))}</span>`; clArea.appendChild(el); }
+      el.style.left = Math.round(cx + sz * .08) + "px"; el.style.top = Math.round(cy) + "px"; el.style.width = Math.round(sz * .84) + "px"; el.style.height = Math.round(sz) + "px";
+      keep.add(lk); return;
+    }
+    const d = c.d, ar = ratio(d), pad = sz * .12;
+    let w = sz - pad, h = w * ar; if (h > sz - pad){ h = sz - pad; w = h / ar; }
+    const mv = lnMoved.get(d.id);
+    const x = mv ? Math.min(mv.x, W - w) : cx + (sz - w) / 2, y = mv ? Math.min(mv.y, H - h) : cy + (sz - h) / 2;
+    const dk = "D:" + d.id;
+    let el = old.get(dk);
+    if (!el){
+      el = document.createElement("button");
+      el.type = "button"; el.className = "ln-item ln-new"; el.dataset.k = dk; el.dataset.id = d.id;
+      el.setAttribute("aria-label", d.title);
+      el.innerHTML = plainImg(d, true) + `<span class="ln-cap">${esc(d.title)}</span>`;
+      el.style.animationDelay = Math.min(500, fresh++ * 12) + "ms";
+      clArea.appendChild(el);
+    }
+    el.dataset.i = view.indexOf(d);
+    el.style.left = Math.round(x) + "px"; el.style.top = Math.round(y) + "px"; el.style.width = Math.round(w) + "px";
+    el.style.zIndex = mv ? mv.z : 1;
+    keep.add(dk);
+  });
+  old.forEach((el, k) => { if (!keep.has(k)){ el.classList.add("ln-gone"); setTimeout(() => el.remove(), 350); } });
+  observeImgs(clArea);
+}
+// drag any object anywhere on the board; a press without a drag opens it
+let lnDrag = null;
+clArea.addEventListener("pointerdown", e => {
+  if (look !== "lenta" || e.button > 0) return;
+  const el = e.target.closest(".ln-item"); if (!el || el.classList.contains("ln-gone")) return;
+  lnDrag = { el, id: e.pointerId, sx: e.clientX, sy: e.clientY, x0: parseFloat(el.style.left), y0: parseFloat(el.style.top), moved: false };
+  try { el.setPointerCapture(e.pointerId); } catch (err) {}
+});
+clArea.addEventListener("pointermove", e => {
+  const g = lnDrag; if (!g || e.pointerId !== g.id) return;
+  const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
+  if (!g.moved){ if (Math.hypot(dx, dy) < 5) return; g.moved = true; g.el.classList.add("dragging"); g.el.style.zIndex = ++lnZ; }
+  g.el.style.left = Math.round(Math.max(0, Math.min(clArea.clientWidth - g.el.offsetWidth, g.x0 + dx))) + "px";
+  g.el.style.top = Math.round(Math.max(0, Math.min(clArea.clientHeight - g.el.offsetHeight, g.y0 + dy))) + "px";
+});
+function lnDrop(e){
+  const g = lnDrag; if (!g || e.pointerId !== g.id) return;
+  lnDrag = null;
+  if (!g.moved) return;
+  g.el.classList.remove("dragging");
+  lnMoved.set(g.el.dataset.id, { x: parseFloat(g.el.style.left), y: parseFloat(g.el.style.top), z: lnZ });
+  lnDragEnd = Date.now();
+  $("lnTidy").style.visibility = "visible";
+}
+clArea.addEventListener("pointerup", lnDrop);
+clArea.addEventListener("pointercancel", lnDrop);
+clArea.addEventListener("click", e => {
+  const el = e.target.closest(".ln-item"); if (!el) return;
+  if (Date.now() - lnDragEnd < 300) return;
+  openDetail(+el.dataset.i);
+});
+$("lnBar").addEventListener("click", e => {
+  const b = e.target.closest("[data-sort]"); if (!b) return;
+  lnSort = lnSort === b.dataset.sort ? null : b.dataset.sort;
+  render();
+});
+$("lnClear").addEventListener("click", () => pickInMenu(() => RESET()));
+$("lnTidy").addEventListener("click", () => { lnMoved.clear(); render(); });
+// Debesis or Lenta; filters picked in the menu carry over
+function setLook(v){
+  look = v === "lenta" ? "lenta" : "debesis";
+  document.querySelectorAll("[data-view]").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === look));
+  closeMenu(); boardSig = "";
+  render();
+  window.scrollTo(0, 0);
+}
+document.querySelector(".vsw").addEventListener("click", e => { const b = e.target.closest("[data-view]"); if (b && b.dataset.view !== look) setLook(b.dataset.view); });
+let lnRT = 0;
+window.addEventListener("resize", () => { clearTimeout(lnRT); lnRT = setTimeout(() => { syncTools(); if (look === "lenta") render(); }, 200); });
 
 /* ---------- Start ---------- */
 const museums = new Set(DATA.filter(d => d.via !== "commons").map(d => d.provider)).size;
